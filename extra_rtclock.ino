@@ -7,8 +7,8 @@
 DS3231 rtcClock;
 RTClib myRTC;
 
-volatile byte a1_ScheduledAction = ACTION_NOP;
-volatile byte a2_ScheduledAction = ACTION_NOP;
+struct Action *a1_ScheduledAction = &NoAction;
+struct Action *a2_ScheduledAction = &NoAction;
 
 #endif
 //**************************************************************************************************
@@ -31,7 +31,7 @@ void clock_GetTimeStamp(char *timestamp) {
 #endif
 }
 //==================================================================================================
-void clock_Alarm1_SetInMinutesWithAction(byte extraMinutes, byte scheduledAction) {
+void clock_Alarm1_SetInMinutesWithAction(byte extraMinutes, const struct Action *scheduledAction) {
 #ifdef UseRealTimeClock
   a1_ScheduledAction = scheduledAction;
   //
@@ -46,7 +46,7 @@ void clock_Alarm1_SetInMinutesWithAction(byte extraMinutes, byte scheduledAction
 #endif
 }
 //==================================================================================================
-void clock_Alarm2_SetInMinutesWithAction(byte extraMinutes, byte scheduledAction) {
+void clock_Alarm2_SetInMinutesWithAction(byte extraMinutes, const struct Action *scheduledAction) {
 #ifdef UseRealTimeClock
   a2_ScheduledAction = scheduledAction;
   //
@@ -67,10 +67,10 @@ void clock_TriggerIfAlarm() {
 //==================================================================================================
 void clock_Alarm1_TriggerIfAlarm() {
 #ifdef UseRealTimeClock
-  if (rtcClock.checkIfAlarm(1) && a1_ScheduledAction != ACTION_NOP) {
+  if (rtcClock.checkIfAlarm(1) && a1_ScheduledAction != &NoAction) {
     actions_ProcessAction(a1_ScheduledAction);
     //
-    a1_ScheduledAction = ACTION_NOP;
+    a1_ScheduledAction = &NoAction;
     //
 #ifdef DEBUG
     Serial.println("Alarm 1 triggered");
@@ -83,10 +83,10 @@ void clock_Alarm1_TriggerIfAlarm() {
 //==================================================================================================
 void clock_Alarm2_TriggerIfAlarm() {
 #ifdef UseRealTimeClock
-  if (rtcClock.checkIfAlarm(2) && a2_ScheduledAction != ACTION_NOP) {
+  if (rtcClock.checkIfAlarm(2) && a2_ScheduledAction != &NoAction) {
     actions_ProcessAction(a2_ScheduledAction);
     //
-    a2_ScheduledAction = ACTION_NOP;
+    a2_ScheduledAction = &NoAction;
     //
 #ifdef DEBUG
     Serial.println("Alarm 2 triggered");

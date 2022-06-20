@@ -146,13 +146,13 @@ void menu_process_button_action(byte &button, byte &prevs_button) {
 
   switch (button) {
     case BTN_VENTILATION_1:
-      actions_ACTION1();
+      actions_ProcessAction(&Action1);
       break;
     case BTN_VENTILATION_2:
-      actions_ACTION2();
+      actions_ProcessAction(&Action2);
       break;
     case BTN_VENTILATION_3:
-      actions_ACTION3();
+      actions_ProcessAction(&Action3);
       break;
     case BTN_UP:
       // statements

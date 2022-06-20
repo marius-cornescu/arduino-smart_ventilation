@@ -40,12 +40,14 @@ void display_Setup() {
 #endif
 
 //==================================================================================================
-void display_Print1stLine(const char* label, byte currentAction) {
-#ifdef UseDisplay
-  char buffer[80];
-  sprintf(buffer, "%s: %d", label, currentAction);
+void display_Print1stLine(const struct Action *action) {
+  display_Print1stLine(action, action->name);
+}
+//==================================================================================================
+void display_Print1stLine(const struct Action *action, const char* label) {
+  char buffer[30];
+  sprintf(buffer, "A%2d|%11s", action->actionCode, label);
   display_Print1stLine(buffer);
-#endif
 }
 //==================================================================================================
 void display_Print1stLine(const char* label) {

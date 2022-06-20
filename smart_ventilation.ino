@@ -91,7 +91,7 @@ const unsigned int RELAY_4_PIN = 8; // DIGITAL PORT 8
 volatile int ledState = HIGH;
 RCSwitch rfRx = RCSwitch();
 
-byte previousAction = ACTION_UNKNOWN;
+struct Action *previousAction = &NoAction;
 
 //==================================================================================================
 //**************************************************************************************************
@@ -106,14 +106,13 @@ void setup() {
   // initialize digital pin LED_INDICATOR_PIN as an output.
   pinMode(LED_INDICATOR_PIN, OUTPUT);
   //
+#ifdef UseDisplay
+  display_Setup();
+#endif
+  //
   actions_Setup();
   //
   menu_Setup();
-  //
-#ifdef UseDisplay
-  display_Setup();
-  display_Print1stLine("START-UP", Action1.name);
-#endif
   //
   rfRx.enableReceive(RF_INTERRUPT_D2_PIN);
   //
@@ -126,12 +125,10 @@ void loop() {
     unsigned long buttonId = rfRx.getReceivedValue();
     if (isButtonValid_FastCheck(buttonId, rfRx.getReceivedBitlength(), rfRx.getReceivedDelay(), rfRx.getReceivedRawdata(), rfRx.getReceivedProtocol())) {
 
-      unsigned int currentAction = actions_ComputeActionForButton(buttonId);
+      Action *currentAction = actions_ComputeActionForButton(buttonId);
 
-      if (currentAction < ACTION_MAX_VALID) {
+      if (currentAction->actionCode < ACTION_MAX_VALID) {
         if (currentAction != previousAction) {
-          display_Print1stLine("ACTION", currentAction);
-
           actions_ProcessAction(currentAction);
 
           previousAction = currentAction;

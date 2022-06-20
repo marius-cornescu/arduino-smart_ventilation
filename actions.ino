@@ -10,6 +10,8 @@
 void actions_Setup() {
   actions_SetupInitialState();
   //
+  actions_SetStateToDefault();
+  //
 #ifdef DEBUG
   debug_PrintActions();
 #endif
@@ -23,63 +25,34 @@ void actions_SetupInitialState() {
   pinMode(RELAY_3_PIN, OUTPUT);
   pinMode(RELAY_4_PIN, OUTPUT);
   //
-  actions_SetStateToDefault();
-}
-//==================================================================================================
-void actions_SetStateToDefault() {
-  //
-  digitalWrite(RELAY_1_PIN, LOW);
+  digitalWrite(RELAY_1_PIN, HIGH);
   digitalWrite(RELAY_2_PIN, HIGH);
   digitalWrite(RELAY_3_PIN, HIGH);
   digitalWrite(RELAY_4_PIN, HIGH);
 }
 //==================================================================================================
-byte actions_ComputeActionForButton(unsigned long buttonId) {
+void actions_SetStateToDefault() {
+  //
+  actions_ProcessAction(&Action1);
+  //
+}
+//==================================================================================================
+Action* actions_ComputeActionForButton(unsigned long buttonId) {
   for (byte act = 0; act < ARRAY_LEN(Actions); act = act + 1) {
     Action *action = Actions[act];
     for (int i = 0; i < action->buttonCnt; i++) {
       if (action->buttons[i] == buttonId) {
-        return action->actionCode;
+        return action;
       }
     }
   }
 
-  return ACTION_NOP;
+  return &NoAction;
 }
-//==================================================================================================
-#ifdef DEBUG
-void debug_PrintActions() {
-  //Serial.print("|"); Serial.print(Remote1.button1); Serial.print("|"); Serial.print(Remote1.button2); Serial.print("|"); Serial.print(Remote1.button3); Serial.print("|");Serial.print(Remote1.button4);Serial.print("|"); Serial.println();
-
-  Serial.println("--------------------------");
-  for (byte i = 0; i < ARRAY_LEN(Actions); i = i + 1) {
-    debug_PrintAction(Actions[i]);
-  }
-  Serial.println("--------------------------");
-
-  //Serial.print("|"); Serial.print(Action1.buttons[0]); Serial.print("|"); Serial.print(Action1.buttons[1]); Serial.print("|"); Serial.print(Action1.buttons[2]); Serial.print("|"); Serial.println();
-}
-
-void debug_PrintAction(const struct Action *action) {
-  char buffer[200];
-  sprintf(buffer, "Action {name=\"%s\", actionCode=%d, buttonCnt=%d, buttons=[ ",
-          action->name, action->actionCode, action->buttonCnt);
-  Serial.print(buffer);
-
-  for (int i = 0; i < action->buttonCnt; i++) {
-    if (i) {
-      Serial.print(", ");
-    }
-    Serial.print(action->buttons[i]);
-
-  }
-  Serial.println(" ]}");
-}
-#endif
 //==================================================================================================
 void actions_ProcessAction(const struct Action *action) {
   actions_ProcessAction(action->actionCode);
-  display_Print1stLine(action->name);
+  display_Print1stLine(action);
 }
 //==================================================================================================
 void actions_ProcessAction(byte currentAction) {
@@ -117,7 +90,7 @@ void actions_ACTION1() {
   digitalWrite(RELAY_2_PIN, HIGH);
   digitalWrite(RELAY_3_PIN, HIGH);
   //
-  display_Print1stLine("Vent", 1);
+  display_Print1stLine(&Action1);
 }
 //==================================================================================================
 void actions_ACTION2() {
@@ -126,7 +99,7 @@ void actions_ACTION2() {
   digitalWrite(RELAY_2_PIN, LOW);
   digitalWrite(RELAY_3_PIN, HIGH);
   //
-  display_Print1stLine("Vent", 2);
+  display_Print1stLine(&Action2);
 }
 //==================================================================================================
 void actions_ACTION3() {
@@ -135,7 +108,7 @@ void actions_ACTION3() {
   digitalWrite(RELAY_2_PIN, HIGH);
   digitalWrite(RELAY_3_PIN, LOW);
   //
-  display_Print1stLine("Vent", 3);
+  display_Print1stLine(&Action3);
 }
 //==================================================================================================
 void actions_ACTION4() {
@@ -144,4 +117,38 @@ void actions_ACTION4() {
   clock_Alarm1_SetInMinutesWithAction(ACTION4_DELAY, ACTION_1);
   //
 }
+//==================================================================================================
+
+
+//##################################################################################################
+//==================================================================================================
+#ifdef DEBUG
+void debug_PrintActions() {
+  Serial.print("|"); Serial.print(Remote1.button1); Serial.print("|"); Serial.print(Remote1.button2); Serial.print("|"); Serial.print(Remote1.button3); Serial.print("|"); Serial.print(Remote1.button4); Serial.print("|"); Serial.println();
+
+  Serial.println("--------------------------");
+  for (byte i = 0; i < ARRAY_LEN(Actions); i = i + 1) {
+    debug_PrintAction(Actions[i]);
+  }
+  Serial.println("--------------------------");
+
+  //Serial.print("|"); Serial.print(Action1.buttons[0]); Serial.print("|"); Serial.print(Action1.buttons[1]); Serial.print("|"); Serial.print(Action1.buttons[2]); Serial.print("|"); Serial.println();
+}
+
+void debug_PrintAction(const struct Action *action) {
+  char buffer[200];
+  sprintf(buffer, "Action {name=\"%s\", actionCode=%d, buttonCnt=%d, buttons=[ ",
+          action->name, action->actionCode, action->buttonCnt);
+  Serial.print(buffer);
+
+  for (int i = 0; i < action->buttonCnt; i++) {
+    if (i) {
+      Serial.print(", ");
+    }
+    Serial.print(action->buttons[i]);
+
+  }
+  Serial.println(" ]}");
+}
+#endif
 //==================================================================================================
