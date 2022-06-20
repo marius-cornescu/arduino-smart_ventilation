@@ -76,7 +76,7 @@ void clock_Alarm1_TriggerIfAlarm() {
     Serial.println("Alarm 1 triggered");
 #endif
     //
-    display_Print2ndLine("|A1|");
+    display_Clear2ndLine();
   }
 #endif
 }
@@ -92,7 +92,7 @@ void clock_Alarm2_TriggerIfAlarm() {
     Serial.println("Alarm 2 triggered");
 #endif
     //
-    display_Print2ndLine("|A1|");
+    display_Clear2ndLine();
   }
 #endif
 }
@@ -101,6 +101,8 @@ void clock_ResetAlarms() {
 #ifdef UseRealTimeClock
   rtcClock.turnOffAlarm(1);
   rtcClock.turnOffAlarm(2);
+  //
+  display_Clear2ndLine();
 #endif
 }
 //==================================================================================================

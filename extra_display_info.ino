@@ -1,10 +1,15 @@
 #ifdef UseDisplay
 
-//= CONSTANTS ======================================================================================
+//= DEFINES ========================================================================================
 #define DISPLAY_STATUS_POS 15
 #define DISPLAY_I2C_ADDRESS 0x27
 
-#define BLANK_LINE "                                                                                "
+#define BLANK_LINE "                                        "
+#define TEST_LINE  "***************#123456789012345678901234"
+
+//= INCLUDE ========================================================================================
+
+//= CONSTANTS ======================================================================================
 
 //= VARIABLES ======================================================================================
 LiquidCrystal_I2C lcd(DISPLAY_I2C_ADDRESS, 16, 2);
@@ -19,8 +24,9 @@ void display_Setup() {
   //------------- TEST SCREEN -----------------------
   lcd.clear();         // clear the screen
   lcd.home();          // set the cursor to position 0, line 1
-  // Numbers are stored but not displayed
-  lcd.print("***************#123456789012345678901234***************#123456789012345678901234");  // write on the screen
+  lcd.print(TEST_LINE);
+  lcd.setCursor(0, 1);
+  lcd.print(TEST_LINE);
   lcd.home();
   delay(TIME_TICK * 50);
   //-------------------
@@ -75,9 +81,25 @@ void display_ShowProgress() {
 void display_Print2ndLine(const char* label) {
 #ifdef UseDisplay
   lcd.setCursor(0, 1);        // set the cursor to position 0, line 2
-  lcd.print("                                ");
+  lcd.print(BLANK_LINE);
   lcd.setCursor(0, 1);
   lcd.print(label);
+#endif
+}
+//==================================================================================================
+void display_Clear1stLine() {
+  display_ClearLine(0);
+}
+//==================================================================================================
+void display_Clear2ndLine() {
+  display_ClearLine(1);
+}
+//==================================================================================================
+void display_ClearLine(byte line) {
+#ifdef UseDisplay
+  lcd.setCursor(0, line);
+  lcd.print(BLANK_LINE);
+  lcd.setCursor(0, line);
 #endif
 }
 //==================================================================================================
