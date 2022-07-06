@@ -25,13 +25,12 @@ void clock_GetTimeStamp(char *timestamp) {
   sprintf(timestamp, "%02d/%02d/%02d %02d:%02d:%02d", now.day(), now.month(), now.year(), now.hour(), now.minute(), now.second());
 
 #ifdef DEBUG
-  Serial.print(F("Date/Time: "));
-  Serial.println(timestamp);
+  Serial.print("Date/Time: "); Serial.println(timestamp);
 #endif
 #endif
 }
 //==================================================================================================
-void clock_Alarm1_SetInMinutesWithAction(byte extraMinutes, const struct Action *scheduledAction) {
+void clock_Alarm1_SetInMinutesWithAction(byte extraMinutes, struct Action *scheduledAction) {
 #ifdef UseRealTimeClock
   a1_ScheduledAction = scheduledAction;
   //
@@ -46,7 +45,7 @@ void clock_Alarm1_SetInMinutesWithAction(byte extraMinutes, const struct Action 
 #endif
 }
 //==================================================================================================
-void clock_Alarm2_SetInMinutesWithAction(byte extraMinutes, const struct Action *scheduledAction) {
+void clock_Alarm2_SetInMinutesWithAction(byte extraMinutes, struct Action *scheduledAction) {
 #ifdef UseRealTimeClock
   a2_ScheduledAction = scheduledAction;
   //

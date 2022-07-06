@@ -18,12 +18,12 @@
   DISPLAY - I2C
     SDA is the serial data
     SCL is the serial clock
-      
+
   -------------------------------
   RTC-DS3231 - I2C
     SDA is the serial data
     SCL is the serial clock
-      
+
   -------------------------------
   RELAY
     D5  --> Relay1
@@ -88,7 +88,6 @@ const unsigned int RELAY_3_PIN = 7; // DIGITAL PORT 7
 const unsigned int RELAY_4_PIN = 8; // DIGITAL PORT 8
 //
 //= VARIABLES ======================================================================================
-volatile int ledState = HIGH;
 RCSwitch rfRx = RCSwitch();
 
 struct Action *previousAction = &NoAction;
@@ -101,10 +100,16 @@ void setup() {
   Serial.begin(57600);
   Serial.println("START-UP");
 #endif
-  // Button port is in PullUp mode
-  //pinMode(MANUAL_MODE_PIN, INPUT_PULLUP);
   // initialize digital pin LED_INDICATOR_PIN as an output.
   pinMode(LED_INDICATOR_PIN, OUTPUT);
+  digitalWrite(LED_INDICATOR_PIN, HIGH);
+  //
+  // Button port is in PullUp mode
+  //pinMode(MANUAL_MODE_PIN, INPUT_PULLUP);
+  //
+  Wire.begin();
+  //
+  delay(TIME_TICK * 50);
   //
 #ifdef UseDisplay
   display_Setup();
@@ -117,13 +122,15 @@ void setup() {
   rfRx.enableReceive(RF_INTERRUPT_D2_PIN);
   //
   delay(TIME_TICK * 50);
+  digitalWrite(LED_INDICATOR_PIN, LOW);
 }
 //**************************************************************************************************
 //==================================================================================================
 void loop() {
   if (rfRx.available()) {
+    digitalWrite(LED_INDICATOR_PIN, HIGH);
     unsigned long buttonId = rfRx.getReceivedValue();
-    if (isButtonValid_FastCheck(buttonId, rfRx.getReceivedBitlength(), rfRx.getReceivedDelay(), rfRx.getReceivedRawdata(), rfRx.getReceivedProtocol())) {
+    if (isButtonValid_FastCheck(buttonId, rfRx.getReceivedProtocol(), rfRx.getReceivedBitlength(), rfRx.getReceivedDelay(), rfRx.getReceivedRawdata())) {
 
       Action *currentAction = actions_ComputeActionForButton(buttonId);
 
@@ -139,7 +146,8 @@ void loop() {
     }
 
     rfRx.resetAvailable();
-  //
+    digitalWrite(LED_INDICATOR_PIN, LOW);
+    //
   } else {
     // GETS EXECUTED CONTINUOUSLY WHEN NO MESSAGE
     clock_TriggerIfAlarm();
@@ -151,15 +159,15 @@ void loop() {
   }
 }
 //==================================================================================================
-bool isButtonValid_FastCheck(unsigned long decimal, unsigned int length, unsigned int delay, unsigned int* raw, unsigned int protocol) {
+bool isButtonValid_FastCheck(unsigned long decimal, unsigned int protocol, unsigned int length, unsigned int delay, unsigned int* raw) {
   printRxToSerial(decimal, length, delay, raw, protocol);
 
   if ((protocol == RF_TARGET_PROTOCOL) && (length == RF_TARGET_BIT_COUNT)) {
     return true;
   } else {
-    #ifdef DEBUG
-      Serial.println("XXXX");
-    #endif
+#ifdef DEBUG
+    Serial.println("????");
+#endif
     return false;
   }
 }

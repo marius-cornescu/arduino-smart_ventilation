@@ -27,8 +27,6 @@ PCF8575 buttons(BUTTONS_I2C_ADDRESS);  // add switches to lines  (used as input)
 
 //**************************************************************************************************
 void menu_Setup() {
-  Wire.begin();
-  //
   // Set pinMode
   // Side A
   buttons.pinMode(P0, OUTPUT);

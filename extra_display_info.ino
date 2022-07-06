@@ -40,13 +40,13 @@ void display_Setup() {
 #endif
 
 //==================================================================================================
-void display_Print1stLine(const struct Action *action) {
+void display_Print1stLine(struct Action *action) {
   display_Print1stLine(action, action->name);
 }
 //==================================================================================================
-void display_Print1stLine(const struct Action *action, const char* label) {
+void display_Print1stLine(struct Action *action, const char* label) {
   char buffer[30];
-  sprintf(buffer, "A%2d|%11s", action->actionCode, label);
+  sprintf(buffer, "A%02d:%11s", action->actionCode, label);
   display_Print1stLine(buffer);
 }
 //==================================================================================================
@@ -90,14 +90,14 @@ void display_Print2ndLine(const char* label) {
 }
 //==================================================================================================
 void display_Clear1stLine() {
-  display_ClearLine(0);
+  __ClearLine(0);
 }
 //==================================================================================================
 void display_Clear2ndLine() {
-  display_ClearLine(1);
+  __ClearLine(1);
 }
 //==================================================================================================
-void display_ClearLine(byte line) {
+void __ClearLine(byte line) {
 #ifdef UseDisplay
   lcd.setCursor(0, line);
   lcd.print(BLANK_LINE);
