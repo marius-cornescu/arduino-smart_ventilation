@@ -97,7 +97,7 @@ struct Action *previousAction = &NoAction;
 void setup() {
 #ifdef DEBUG
   // Open serial communications and wait for port to open:
-  Serial.begin(57600);
+  Serial.begin(115200);
   Serial.println("START-UP");
 #endif
   // initialize digital pin LED_INDICATOR_PIN as an output.

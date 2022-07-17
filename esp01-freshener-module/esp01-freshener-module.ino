@@ -7,16 +7,18 @@
 */
 
 //= DEFINES ========================================================================================
+//#define DEBUG
+
 #define ESP8266_BUILTIN_LED 1 // LOW is on and HIGH is off for blue led
-#define ESP8266_DPIN 3
+#define ESP8266_GPIO0 0        // HIGH is 3.3V
+#define ESP8266_GPIO2 2        // HIGH is 3.3V 
 
 //= INCLUDES =======================================================================================
 
 
 
 //= CONSTANTS ======================================================================================
-const int LED_INDICATOR_PIN = 2;  // choose the pin for the LED
-const int D_PIN = 0;
+const int D_PIN = ESP8266_GPIO2;
 
 
 //= VARIABLES ======================================================================================
@@ -26,24 +28,24 @@ volatile int ledState = HIGH;
 //==================================================================================================
 //**************************************************************************************************
 void setup() {
+#ifdef DEBUG
   // Open serial communications and wait for port to open:
   Serial.begin(115200);
-  // initialize digital pin LED_INDICATOR_PIN as an output.
-  pinMode(LED_INDICATOR_PIN, OUTPUT);
+  Serial.println("START-UP");
+#endif
   //
   pinMode(D_PIN, OUTPUT);
 }
 //**************************************************************************************************
 //==================================================================================================
 void loop() {
-  ledState = HIGH;
-  //digitalWrite(LED_INDICATOR_PIN, ledState);
-  digitalWrite(D_PIN, ledState);
-  delay(1000);
-
-  ledState = LOW;
-  //digitalWrite(LED_INDICATOR_PIN, ledState);
-  digitalWrite(D_PIN, ledState);
-  delay(4000);
+  // Enable for 17sec (15"' to power on + 2"' to run)
+  digitalWrite(D_PIN, HIGH);
+  delay(15000);
+  // Power down for 3sec to cool down
+  digitalWrite(D_PIN, LOW);
+  delay(3000);
 }
+//==================================================================================================
+
 //==================================================================================================
