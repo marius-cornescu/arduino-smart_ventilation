@@ -37,7 +37,7 @@ void menu_Setup() {
   buttons.pinMode(P5, OUTPUT);
   buttons.pinMode(P6, OUTPUT);
   buttons.pinMode(P7, OUTPUT);
-  // Side B
+  // Side B - BUTTONS
   buttons.pinMode(P8, INPUT);
   buttons.pinMode(P9, INPUT);
   buttons.pinMode(P10, INPUT);
@@ -59,7 +59,7 @@ void menu_ActIfActivity() {
   byte button = get_button(buttons);
 
   if(button == BTN_ENTER) {
-    digitalWrite(LED_INDICATOR_PIN, HIGH);
+    digitalWrite(LED_RED_PIN, HIGH);
     //
     display_Print2ndLine("<MANUAL>");
     display_ShowProgress();
@@ -68,7 +68,7 @@ void menu_ActIfActivity() {
     menu_process_loop(buttons);
     //
     display_Print2ndLine("");
-    digitalWrite(LED_INDICATOR_PIN, LOW);
+    digitalWrite(LED_RED_PIN, LOW);
   }
 }
 //==================================================================================================

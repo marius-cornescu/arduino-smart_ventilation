@@ -39,6 +39,7 @@
 //#define RfLogsToSerial  // Print RF messages to Serial Terminal       // uses 9% of memory
 //#define I2CLogsToSerial  // Print I2C messages to Serial Terminal       // uses ??% of memory
 #define UseRealTimeClock  // Use the RTC
+#define UseBlynkWifi  // Use the Blynk Wifi with ESP8266
 
 //= INCLUDES =======================================================================================
 #if defined(DEBUG) || defined(RfLogsToSerial) || defined(I2CLogsToSerial)
@@ -60,8 +61,15 @@
 #include <DS3231.h>
 #endif
 
+#ifdef UseBlynkWifi
+#include "Secrets.h"
+#include <ESP8266_Lib.h>
+#include <BlynkSimpleShieldEsp8266.h>
+#endif
+
 //= CONSTANTS ======================================================================================
 const int LED_INDICATOR_PIN = LED_BUILTIN;  // choose the pin for the LED
+const int LED_RED_PIN = 13;
 //------------------------------------------------
 #ifdef DEBUG
 const byte TIME_TICK = 500;
@@ -70,7 +78,6 @@ const byte TIME_TICK = 10;
 #endif
 //------------------------------------------------
 // MANUAL MODE BUTTON
-const char MANUAL_MODE_PIN = 4;
 const bool IS_PRESSED = false;
 //------------------------------------------------
 const char RF_INTERRUPT_D2_PIN = 0; // RF Receiver on INT0 => pin D2
@@ -100,19 +107,18 @@ void setup() {
   Serial.begin(115200);
   Serial.println("START-UP");
 #endif
-  // initialize digital pin LED_INDICATOR_PIN as an output.
+  // initialize digital pins
   pinMode(LED_INDICATOR_PIN, OUTPUT);
+  pinMode(LED_RED_PIN, OUTPUT);
   digitalWrite(LED_INDICATOR_PIN, HIGH);
-  //
-  // Button port is in PullUp mode
-  //pinMode(MANUAL_MODE_PIN, INPUT_PULLUP);
-  //
+  // i2C
   Wire.begin();
   //
   delay(TIME_TICK * 50);
   //
 #ifdef UseDisplay
   display_Setup();
+  display_Print2ndLine("<BOOTING>");
 #endif
   //
   actions_Setup();
@@ -121,14 +127,19 @@ void setup() {
   //
   rfRx.enableReceive(RF_INTERRUPT_D2_PIN);
   //
+  wifi_Setup();
+  //
   delay(TIME_TICK * 50);
   digitalWrite(LED_INDICATOR_PIN, LOW);
+  display_Print2ndLine("         ");
 }
 //**************************************************************************************************
 //==================================================================================================
 void loop() {
+  wifi_Run();
+  //
   if (rfRx.available()) {
-    digitalWrite(LED_INDICATOR_PIN, HIGH);
+    digitalWrite(LED_RED_PIN, HIGH);
     unsigned long buttonId = rfRx.getReceivedValue();
     if (isButtonValid_FastCheck(buttonId, rfRx.getReceivedProtocol(), rfRx.getReceivedBitlength(), rfRx.getReceivedDelay(), rfRx.getReceivedRawdata())) {
 
@@ -146,7 +157,7 @@ void loop() {
     }
 
     rfRx.resetAvailable();
-    digitalWrite(LED_INDICATOR_PIN, LOW);
+    digitalWrite(LED_RED_PIN, LOW);
     //
   } else {
     // GETS EXECUTED CONTINUOUSLY WHEN NO MESSAGE
