@@ -27,6 +27,9 @@ PCF8575 buttons(BUTTONS_I2C_ADDRESS);  // add switches to lines  (used as input)
 
 //**************************************************************************************************
 void menu_Setup() {
+#ifdef DEBUG
+  Serial.println("MENU:Setup >>>");
+#endif
   // Set pinMode
   // Side A
   buttons.pinMode(P0, OUTPUT);
@@ -52,6 +55,9 @@ void menu_Setup() {
   buttons.digitalWrite(LED_MENU, OFF);
   //..............................
   delay(TIME_TICK * 10);
+#ifdef DEBUG
+  Serial.println(">>> MENU:Setup");
+#endif
 }
 //**************************************************************************************************
 //==================================================================================================

@@ -12,6 +12,9 @@ const Action *Actions[] = { &Action1,  &Action2, &Action3, &Action4 };
 //==================================================================================================
 //**************************************************************************************************
 void actions_Setup() {
+#ifdef DEBUG
+  Serial.println("ACTIONS:Setup >>>");
+#endif
   __SetupRelays();
   //
   __SetupFunctionsForActions();
@@ -20,6 +23,7 @@ void actions_Setup() {
   //
 #ifdef DEBUG
   debug_PrintActions();
+  Serial.println(">>> ACTIONS:Setup");
 #endif
 }
 //**************************************************************************************************

@@ -15,8 +15,13 @@
 LiquidCrystal_I2C lcd(DISPLAY_I2C_ADDRESS, 16, 2);
 byte progress = 0;                  // used to indicate progress on display
 
+#endif
 //**************************************************************************************************
 void display_Setup() {
+#ifdef UseDisplay
+#ifdef DEBUG
+  Serial.println("DISPLAY:Setup >>>");
+#endif
   lcd.init();                 // initialise the LCD
 
   lcd.backlight(); // turn backlight on
@@ -34,11 +39,12 @@ void display_Setup() {
   //-------------------------------------------------
   //lcd.noBacklight(); // turn backlight off
   lcd.noBlink();
+#ifdef DEBUG
+  Serial.println(">>> DISPLAY:Setup");
+#endif
+#endif
 }
 //**************************************************************************************************
-
-#endif
-
 //==================================================================================================
 void display_Print1stLine(struct Action *action) {
   display_Print1stLine(action, action->name);

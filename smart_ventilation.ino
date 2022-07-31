@@ -39,7 +39,6 @@
 //#define RfLogsToSerial  // Print RF messages to Serial Terminal       // uses 9% of memory
 //#define I2CLogsToSerial  // Print I2C messages to Serial Terminal       // uses ??% of memory
 #define UseRealTimeClock  // Use the RTC
-#define UseBlynkWifi  // Use the Blynk Wifi with ESP8266
 
 //= INCLUDES =======================================================================================
 #if defined(DEBUG) || defined(RfLogsToSerial) || defined(I2CLogsToSerial)
@@ -61,15 +60,8 @@
 #include <DS3231.h>
 #endif
 
-#ifdef UseBlynkWifi
-#include "Secrets.h"
-#include <ESP8266_Lib.h>
-#include <BlynkSimpleShieldEsp8266.h>
-#endif
-
 //= CONSTANTS ======================================================================================
 const int LED_INDICATOR_PIN = LED_BUILTIN;  // choose the pin for the LED
-const int LED_RED_PIN = 13;
 //------------------------------------------------
 #ifdef DEBUG
 const byte TIME_TICK = 500;
@@ -105,21 +97,18 @@ void setup() {
 #ifdef DEBUG
   // Open serial communications and wait for port to open:
   Serial.begin(115200);
-  Serial.println("START-UP");
+  Serial.println("START-UP >>>");
 #endif
-  // initialize digital pins
+  // initialize digital pin LED_INDICATOR_PIN as an output.
   pinMode(LED_INDICATOR_PIN, OUTPUT);
-  pinMode(LED_RED_PIN, OUTPUT);
   digitalWrite(LED_INDICATOR_PIN, HIGH);
-  // i2C
+  //
   Wire.begin();
   //
   delay(TIME_TICK * 50);
   //
-#ifdef UseDisplay
   display_Setup();
   display_Print2ndLine("<BOOTING>");
-#endif
   //
   actions_Setup();
   //
@@ -127,19 +116,20 @@ void setup() {
   //
   rfRx.enableReceive(RF_INTERRUPT_D2_PIN);
   //
-  wifi_Setup();
-  //
   delay(TIME_TICK * 50);
+  //
   digitalWrite(LED_INDICATOR_PIN, LOW);
   display_Print2ndLine("         ");
+  //
+#ifdef DEBUG
+  Serial.println(">>> START-UP");
+#endif
 }
 //**************************************************************************************************
 //==================================================================================================
 void loop() {
-  wifi_Run();
-  //
   if (rfRx.available()) {
-    digitalWrite(LED_RED_PIN, HIGH);
+    digitalWrite(LED_INDICATOR_PIN, HIGH);
     unsigned long buttonId = rfRx.getReceivedValue();
     if (isButtonValid_FastCheck(buttonId, rfRx.getReceivedProtocol(), rfRx.getReceivedBitlength(), rfRx.getReceivedDelay(), rfRx.getReceivedRawdata())) {
 
@@ -157,7 +147,7 @@ void loop() {
     }
 
     rfRx.resetAvailable();
-    digitalWrite(LED_RED_PIN, LOW);
+    digitalWrite(LED_INDICATOR_PIN, LOW);
     //
   } else {
     // GETS EXECUTED CONTINUOUSLY WHEN NO MESSAGE
@@ -177,7 +167,7 @@ bool isButtonValid_FastCheck(unsigned long decimal, unsigned int protocol, unsig
     return true;
   } else {
 #ifdef DEBUG
-    Serial.println("????");
+    Serial.println("???? Unknown RF code / wrong protocol or bit count");
 #endif
     return false;
   }
