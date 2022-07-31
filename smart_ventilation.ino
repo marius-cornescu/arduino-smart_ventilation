@@ -61,16 +61,13 @@
 #endif
 
 //= CONSTANTS ======================================================================================
-const int LED_INDICATOR_PIN = LED_BUILTIN;  // choose the pin for the LED
+const int LED_INDICATOR_PIN = LED_BUILTIN;  // choose the pin for the LED // D13
 //------------------------------------------------
 #ifdef DEBUG
 const byte TIME_TICK = 500;
 #else
 const byte TIME_TICK = 10;
 #endif
-//------------------------------------------------
-// MANUAL MODE BUTTON
-const bool IS_PRESSED = false;
 //------------------------------------------------
 const char RF_INTERRUPT_D2_PIN = 0; // RF Receiver on INT0 => pin D2
 //------------------------------------------------
@@ -102,7 +99,7 @@ void setup() {
   // initialize digital pin LED_INDICATOR_PIN as an output.
   pinMode(LED_INDICATOR_PIN, OUTPUT);
   digitalWrite(LED_INDICATOR_PIN, HIGH);
-  //
+  // i2C
   Wire.begin();
   //
   delay(TIME_TICK * 50);

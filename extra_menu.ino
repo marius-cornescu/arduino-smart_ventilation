@@ -65,7 +65,7 @@ void menu_ActIfActivity() {
   byte button = get_button(buttons);
 
   if(button == BTN_ENTER) {
-    digitalWrite(LED_RED_PIN, HIGH);
+    digitalWrite(LED_INDICATOR_PIN, HIGH);
     //
     display_Print2ndLine("<MANUAL>");
     display_ShowProgress();
@@ -74,7 +74,7 @@ void menu_ActIfActivity() {
     menu_process_loop(buttons);
     //
     display_Print2ndLine("");
-    digitalWrite(LED_RED_PIN, LOW);
+    digitalWrite(LED_INDICATOR_PIN, LOW);
   }
 }
 //==================================================================================================
