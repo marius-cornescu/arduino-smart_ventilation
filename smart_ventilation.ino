@@ -34,11 +34,16 @@
 
 */
 //= DEFINES ========================================================================================
+#define SW_VERSION "1.0.0"
+//------------------------------------------------
+// Various debug options
 //#define DEBUG
-#define UseDisplay      // Log information and actions to the Display // uses 18% of memory
-//#define RfLogsToSerial  // Print RF messages to Serial Terminal       // uses 9% of memory
+//#define RfLogsToSerial   // Print RF messages to Serial Terminal       // uses 9% of memory
 //#define I2CLogsToSerial  // Print I2C messages to Serial Terminal       // uses ??% of memory
-#define UseRealTimeClock  // Use the RTC
+//------------------------------------------------
+// Various Features
+#define UseDisplay        // Log information and actions to the Display // uses 18% of memory
+#define UseRealTimeClock  // Use the RTC                                // uses 1% of memory
 
 //= INCLUDES =======================================================================================
 #if defined(DEBUG) || defined(RfLogsToSerial) || defined(I2CLogsToSerial)
@@ -105,7 +110,7 @@ void setup() {
   delay(TIME_TICK * 50);
   //
   display_Setup();
-  display_Print2ndLine("<BOOTING>");
+  display_Print2ndLine(strcat("<BOOTING> ", SW_VERSION));
   //
   actions_Setup();
   //
@@ -116,7 +121,7 @@ void setup() {
   delay(TIME_TICK * 50);
   //
   digitalWrite(LED_INDICATOR_PIN, LOW);
-  display_Print2ndLine("         ");
+  display_Clear2ndLine();
   //
 #ifdef DEBUG
   Serial.println(">>> START-UP");

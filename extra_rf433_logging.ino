@@ -1,6 +1,9 @@
 //= CONSTANTS ======================================================================================
 //= VARIABLES ======================================================================================
 //==================================================================================================
+static const char* bin2tristate(const char* bin);
+static char * dec2binWzerofill(unsigned long Dec, unsigned int bitLength);
+//==================================================================================================
 void printRxToSerial(unsigned long decimal, unsigned int length, unsigned int delay, unsigned int* raw, unsigned int protocol) {
 #ifdef RfLogsToSerial
   const char* b = dec2binWzerofill(decimal, length);
