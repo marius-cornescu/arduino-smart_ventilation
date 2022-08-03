@@ -44,6 +44,7 @@
 // Various Features
 #define UseDisplay        // Log information and actions to the Display // uses 18% of memory
 #define UseRealTimeClock  // Use the RTC                                // uses 1% of memory
+//#define VentilationSpeed1Scheduler  // Ventilation speed 1 has TUYA scheduler
 
 //= INCLUDES =======================================================================================
 #if defined(DEBUG) || defined(RfLogsToSerial) || defined(I2CLogsToSerial)
@@ -110,7 +111,9 @@ void setup() {
   delay(TIME_TICK * 50);
   //
   display_Setup();
-  display_Print2ndLine(strcat("<BOOTING> ", SW_VERSION));
+  char boot_message[16];
+  sprintf(boot_message, "<BOOT v%8s>", SW_VERSION);
+  display_Print2ndLine(boot_message);
   //
   actions_Setup();
   //

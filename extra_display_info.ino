@@ -7,6 +7,9 @@
 #define BLANK_LINE "                                        "
 #define TEST_LINE  "***************#123456789012345678901234"
 
+#define LINE1 0
+#define LINE2 1
+
 //= INCLUDE ========================================================================================
 
 //= CONSTANTS ======================================================================================
@@ -27,13 +30,15 @@ void display_Setup() {
   lcd.backlight(); // turn backlight on
   lcd.blink();     // cursor blinks
   //------------- TEST SCREEN -----------------------
+  #ifdef DEBUG
   lcd.clear();         // clear the screen
   lcd.home();          // set the cursor to position 0, line 1
   lcd.print(TEST_LINE);
-  lcd.setCursor(0, 1);
+  lcd.setCursor(0, LINE2);
   lcd.print(TEST_LINE);
   lcd.home();
   delay(TIME_TICK * 50);
+  #endif
   //-------------------
   lcd.clear();
   //-------------------------------------------------
@@ -45,6 +50,27 @@ void display_Setup() {
 #endif
 }
 //**************************************************************************************************
+//==================================================================================================
+void display_ShowProgress() {
+#ifdef UseDisplay
+
+  lcd.setCursor(DISPLAY_STATUS_POS, LINE1);        // set the cursor to position 15, line 1
+  progress = progress + 1;
+  if (progress == 1) {
+    lcd.print("+");
+  } else if (progress == 2) {
+    lcd.print("-");
+  } else if (progress == 3) {
+    lcd.print("#");
+  } else if (progress == 4) {
+    lcd.print("|");
+  } else {
+    lcd.print("*");
+    progress = 0;
+  }
+
+#endif
+}
 //==================================================================================================
 void display_Print1stLine(struct Action *action) {
   display_Print1stLine(action, action->name);
@@ -65,42 +91,21 @@ void display_Print1stLine(const char* label) {
 #endif
 }
 //==================================================================================================
-void display_ShowProgress() {
-#ifdef UseDisplay
-
-  lcd.setCursor(DISPLAY_STATUS_POS, 0);        // set the cursor to position 15, line 2
-  progress = progress + 1;
-  if (progress == 1) {
-    lcd.print("+");
-  } else if (progress == 2) {
-    lcd.print("-");
-  } else if (progress == 3) {
-    lcd.print("#");
-  } else if (progress == 4) {
-    lcd.print("|");
-  } else {
-    lcd.print("*");
-    progress = 0;
-  }
-
-#endif
-}
-//==================================================================================================
 void display_Print2ndLine(const char* label) {
 #ifdef UseDisplay
-  lcd.setCursor(0, 1);        // set the cursor to position 0, line 2
+  lcd.setCursor(0, LINE2);        // set the cursor to position 0, line 2
   lcd.print(BLANK_LINE);
-  lcd.setCursor(0, 1);
+  lcd.setCursor(0, LINE2);
   lcd.print(label);
 #endif
 }
 //==================================================================================================
 void display_Clear1stLine() {
-  __ClearLine(0);
+  __ClearLine(LINE1);
 }
 //==================================================================================================
 void display_Clear2ndLine() {
-  __ClearLine(1);
+  __ClearLine(LINE2);
 }
 //==================================================================================================
 void __ClearLine(byte line) {

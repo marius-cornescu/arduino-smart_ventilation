@@ -81,7 +81,11 @@ void __NoAction() {
 }
 //==================================================================================================
 void __VentilationSpeed1() {
-  digitalWrite(RELAY_1_PIN, LOW);
+  #ifdef VentilationSpeed1Scheduler
+    digitalWrite(RELAY_1_PIN, LOW); // LOW - scheduler / HIGH - always on
+  #else
+    digitalWrite(RELAY_1_PIN, HIGH); // LOW - scheduler / HIGH - always on
+  #endif
   digitalWrite(RELAY_2_PIN, HIGH);
   digitalWrite(RELAY_3_PIN, HIGH);
 }
