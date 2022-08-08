@@ -58,14 +58,6 @@
 #include "PCF8575.h"
 #include <RCSwitch.h>
 
-#ifdef UseDisplay
-#include <LiquidCrystal_I2C.h>
-#endif
-
-#ifdef UseRealTimeClock
-#include <DS3231.h>
-#endif
-
 //= CONSTANTS ======================================================================================
 const byte LED_INDICATOR_PIN = LED_BUILTIN;  // choose the pin for the LED // D13
 //------------------------------------------------
