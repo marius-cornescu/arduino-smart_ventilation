@@ -67,7 +67,7 @@
 #endif
 
 //= CONSTANTS ======================================================================================
-const int LED_INDICATOR_PIN = LED_BUILTIN;  // choose the pin for the LED // D13
+const byte LED_INDICATOR_PIN = LED_BUILTIN;  // choose the pin for the LED // D13
 //------------------------------------------------
 #ifdef DEBUG
 const byte TIME_TICK = 500;
@@ -75,19 +75,19 @@ const byte TIME_TICK = 500;
 const byte TIME_TICK = 10;
 #endif
 //------------------------------------------------
-const char RF_INTERRUPT_D2_PIN = 0; // RF Receiver on INT0 => pin D2
+const byte RF_INTERRUPT_D2_PIN = 0; // RF Receiver on INT0 => pin D2
 //------------------------------------------------
 // Fast Check
-const unsigned int RF_TARGET_PROTOCOL = 1;
-const unsigned int RF_TARGET_BIT_COUNT = 24;
+const byte RF_TARGET_PROTOCOL = 1;
+const byte RF_TARGET_BIT_COUNT = 24;
 //------------------------------------------------
 
 //--------------------------------------------------------------------------------------------------
 // RELEE
-const unsigned int RELAY_1_PIN = 5; // DIGITAL PORT 5
-const unsigned int RELAY_2_PIN = 6; // DIGITAL PORT 6
-const unsigned int RELAY_3_PIN = 7; // DIGITAL PORT 7
-const unsigned int RELAY_4_PIN = 8; // DIGITAL PORT 8
+const byte RELAY_1_PIN = 5; // DIGITAL PORT 5
+const byte RELAY_2_PIN = 6; // DIGITAL PORT 6
+const byte RELAY_3_PIN = 7; // DIGITAL PORT 7
+const byte RELAY_4_PIN = 8; // DIGITAL PORT 8
 //
 //= VARIABLES ======================================================================================
 RCSwitch rfRx = RCSwitch();
