@@ -2,7 +2,7 @@
 //= DEFINES ========================================================================================
 //= INCLUDE ========================================================================================
 //= CONSTANTS ======================================================================================
-const byte LED_MENU = P0;     // 
+const byte LED_RED_1 = P0;     // 
 
 #define BUTTONS_I2C_ADDRESS 0x20
 
@@ -55,7 +55,7 @@ void menu_Setup() {
   //..............................
   buttons.begin();
   //..............................
-  buttons.digitalWrite(LED_MENU, OFF);
+  buttons.digitalWrite(LED_RED_1, OFF);
   //..............................
   delay(TIME_TICK * 10);
 #ifdef DEBUG
@@ -127,17 +127,17 @@ void menu_process_loop(PCF8575 &io) {
   while(button != BTN_BACK) {
     //
     if (button != BTN_NONE) {
-      io.digitalWrite(LED_MENU, ON);// indication of activity
+      io.digitalWrite(LED_RED_1, ON);// indication of activity
       menu_process_button_action(button, prevs_button);
     }
     //
     delay(TIME_TICK);
-    io.digitalWrite(LED_MENU, OFF);// indication of activity
+    io.digitalWrite(LED_RED_1, OFF);// indication of activity
     prevs_button = button;
     button = get_button(io);
   }
 
-  io.digitalWrite(LED_MENU, OFF);
+  io.digitalWrite(LED_RED_1, OFF);
 }
 //==================================================================================================
 void menu_process_button_action(byte &button, byte &prevs_button) {

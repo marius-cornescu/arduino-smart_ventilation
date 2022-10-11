@@ -34,7 +34,7 @@
 
 */
 //= DEFINES ========================================================================================
-#define SW_VERSION "1.0.0"
+#define SW_VERSION "1.0.2"
 //------------------------------------------------
 // Various debug options
 //#define DEBUG
@@ -44,7 +44,6 @@
 // Various Features
 #define UseDisplay        // Log information and actions to the Display // uses 18% of memory
 #define UseRealTimeClock  // Use the RTC                                // uses 1% of memory
-//#define VentilationSpeed1Scheduler  // Ventilation speed 1 has TUYA scheduler
 
 //= INCLUDES =======================================================================================
 #if defined(DEBUG) || defined(RfLogsToSerial) || defined(I2CLogsToSerial)

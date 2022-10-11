@@ -49,6 +49,8 @@ void __SetupRelays() {
 }
 //**************************************************************************************************
 void actions_SetStateToDefault() {
+  actions_ProcessAction(&Action2);
+  delay(TIME_TICK * 50);
   actions_ProcessAction(&Action1);
   //
 }
@@ -81,11 +83,7 @@ void __NoAction() {
 }
 //==================================================================================================
 void __VentilationSpeed1() {
-  #ifdef VentilationSpeed1Scheduler
-    digitalWrite(RELAY_1_PIN, LOW); // LOW - scheduler / HIGH - always on
-  #else
-    digitalWrite(RELAY_1_PIN, HIGH); // LOW - scheduler / HIGH - always on
-  #endif
+  digitalWrite(RELAY_1_PIN, LOW);
   digitalWrite(RELAY_2_PIN, HIGH);
   digitalWrite(RELAY_3_PIN, HIGH);
 }
