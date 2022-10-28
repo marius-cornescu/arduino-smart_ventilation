@@ -73,11 +73,11 @@ void display_ShowProgress() {
 #endif
 }
 //==================================================================================================
-void display_Print1stLine(struct Action *action) {
+void display_Print1stLine(const Action *action) {
   display_Print1stLine(action, action->name);
 }
 //==================================================================================================
-void display_Print1stLine(struct Action *action, const char* label) {
+void display_Print1stLine(const Action *action, const char* label) {
   char buffer[30];
   sprintf(buffer, "A%02d:%11s", action->actionCode, label);
   display_Print1stLine(buffer);
@@ -90,6 +90,16 @@ void display_Print1stLine(const char* label) {
   lcd.home();
   lcd.print(label);
 #endif
+}
+//==================================================================================================
+void display_Print2ndLine(const Action *action) {
+  display_Print2ndLine(action, action->name);
+}
+//==================================================================================================
+void display_Print2ndLine(const Action *action, const char* label) {
+  char buffer[30];
+  sprintf(buffer, "A%02d:%11s", action->actionCode, label);
+  display_Print2ndLine(buffer);
 }
 //==================================================================================================
 void display_Print2ndLine(const char* label) {

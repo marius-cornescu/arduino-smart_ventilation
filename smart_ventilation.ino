@@ -31,10 +31,16 @@
     D7  --> Relay3
     D8  --> Relay4
   -------------------------------
+  MISC
+    D13 --> Red led
+    GND --> button <-- RST
+    D4  --> Scheduler () <-- resistor --> GND
+  -------------------------------
+
 
 */
 //= DEFINES ========================================================================================
-#define SW_VERSION "1.0.2"
+#define SW_VERSION "1.0.3"
 //------------------------------------------------
 // Various debug options
 //#define DEBUG
@@ -47,13 +53,13 @@
 
 //= INCLUDES =======================================================================================
 #if defined(DEBUG) || defined(RfLogsToSerial) || defined(I2CLogsToSerial)
-#include <stdio.h> // for function sprintf
+#include <stdio.h>  // for function sprintf
 #endif
 
 #include "Remotes.h"
 #include "Actions.h"
 
-#include <Wire.h>   // using I2C
+#include <Wire.h>  // using I2C
 #include "PCF8575.h"
 #include <RCSwitch.h>
 
@@ -66,7 +72,7 @@ const byte TIME_TICK = 500;
 const byte TIME_TICK = 10;
 #endif
 //------------------------------------------------
-const byte RF_INTERRUPT_D2_PIN = 0; // RF Receiver on INT0 => pin D2
+const byte RF_INTERRUPT_D2_PIN = 0;  // RF Receiver on INT0 => pin D2
 //------------------------------------------------
 // Fast Check
 const byte RF_TARGET_PROTOCOL = 1;
@@ -74,16 +80,20 @@ const byte RF_TARGET_BIT_COUNT = 24;
 //------------------------------------------------
 
 //--------------------------------------------------------------------------------------------------
-// RELEE
-const byte RELAY_1_PIN = 5; // DIGITAL PORT 5
-const byte RELAY_2_PIN = 6; // DIGITAL PORT 6
-const byte RELAY_3_PIN = 7; // DIGITAL PORT 7
-const byte RELAY_4_PIN = 8; // DIGITAL PORT 8
+// RELAYs
+const byte RELAY_1_PIN = 5;  // DIGITAL PORT 5
+const byte RELAY_2_PIN = 6;  // DIGITAL PORT 6
+const byte RELAY_3_PIN = 7;  // DIGITAL PORT 7
+const byte RELAY_4_PIN = 8;  // DIGITAL PORT 8
+//--------------------------------------------------------------------------------------------------
+const byte VENT_STATUS_PIN = 4;  // DIGITAL PORT 4
 //
 //= VARIABLES ======================================================================================
 RCSwitch rfRx = RCSwitch();
 
-struct Action *previousAction = &NoAction;
+const Action *previousAction = &NoAction;
+
+static unsigned int lastVentStatusState = HIGH;
 
 //==================================================================================================
 //**************************************************************************************************
@@ -95,6 +105,8 @@ void setup() {
 #endif
   // initialize digital pin LED_INDICATOR_PIN as an output.
   pinMode(LED_INDICATOR_PIN, OUTPUT);
+  pinMode(VENT_STATUS_PIN, INPUT);
+  //
   digitalWrite(LED_INDICATOR_PIN, HIGH);
   // i2C
   Wire.begin();
@@ -127,15 +139,13 @@ void loop() {
   if (rfRx.available()) {
     digitalWrite(LED_INDICATOR_PIN, HIGH);
     unsigned long buttonId = rfRx.getReceivedValue();
-    if (isButtonValid_FastCheck(buttonId, rfRx.getReceivedProtocol(), rfRx.getReceivedBitlength(), rfRx.getReceivedDelay(), rfRx.getReceivedRawdata())) {
+    if (isRemoteCodeValid_FastCheck(buttonId, rfRx.getReceivedProtocol(), rfRx.getReceivedBitlength(), rfRx.getReceivedDelay(), rfRx.getReceivedRawdata())) {
 
-      Action *currentAction = actions_ComputeActionForButton(buttonId);
+      const Action *currentAction = actions_ComputeActionForButton(buttonId);
 
       if (currentAction->actionCode < ACTION_MAX_VALID) {
         if (currentAction != previousAction) {
           actions_ProcessAction(currentAction);
-
-          previousAction = currentAction;
         }
 
         display_ShowProgress();
@@ -147,6 +157,9 @@ void loop() {
     //
   } else {
     // GETS EXECUTED CONTINUOUSLY WHEN NO MESSAGE
+    //
+    checkVentilationStatus();
+    //
     clock_TriggerIfAlarm();
     //
     menu_ActIfActivity();
@@ -156,7 +169,7 @@ void loop() {
   }
 }
 //==================================================================================================
-bool isButtonValid_FastCheck(unsigned long decimal, unsigned int protocol, unsigned int length, unsigned int delay, unsigned int* raw) {
+bool isRemoteCodeValid_FastCheck(unsigned long decimal, unsigned int protocol, unsigned int length, unsigned int delay, unsigned int *raw) {
   printRxToSerial(decimal, length, delay, raw, protocol);
 
   if ((protocol == RF_TARGET_PROTOCOL) && (length == RF_TARGET_BIT_COUNT)) {
@@ -166,6 +179,14 @@ bool isButtonValid_FastCheck(unsigned long decimal, unsigned int protocol, unsig
     Serial.println("???? Unknown RF code / wrong protocol or bit count");
 #endif
     return false;
+  }
+}
+//==================================================================================================
+void checkVentilationStatus() {
+  unsigned int current = digitalRead(VENT_STATUS_PIN);
+  if (current != lastVentStatusState) {
+    lastVentStatusState = current;
+    actions_onVentilationOnInV1Change(lastVentStatusState == HIGH);
   }
 }
 //==================================================================================================

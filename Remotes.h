@@ -3,7 +3,7 @@
 
 //= CONSTANTS ======================================================================================
 struct Remote {
-  char *name;
+  const char* name;
   unsigned long button1;
   unsigned long button2;
   unsigned long button3;

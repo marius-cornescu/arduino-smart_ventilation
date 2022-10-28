@@ -20,6 +20,8 @@ const byte ACTION_4 = 4;
 //
 const byte ACTION_5 = 5;
 const byte ACTION_6 = 6;
+//
+const byte ACTION_7 = 7; // not used
 
 //------------------------------------------------
 struct Action {
@@ -70,6 +72,23 @@ Action Action4 {
   /*actionCode*/  ACTION_4,
   /*function*/    0,
   /*buttons*/     { Remote1.button2, Remote1.button3, Remote1.button4, ProgRemote1.button1 }
+};
+//------------------------------------------------
+//------------------------------------------------
+Action ActionVentOff {
+  /*name*/        "Vent-0ff",
+  /*description*/ "Stop Ventilation",
+  /*actionCode*/  ACTION_5,
+  /*function*/    0,
+  /*buttons*/     {  }
+};
+//------------------------------------------------
+Action ActionVentOn {
+  /*name*/        "Vent-On",
+  /*description*/ "Start Ventilation",
+  /*actionCode*/  ACTION_6,
+  /*function*/    0,
+  /*buttons*/     {  }
 };
 //------------------------------------------------
 //------------------------------------------------
