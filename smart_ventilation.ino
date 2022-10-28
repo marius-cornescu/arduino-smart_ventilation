@@ -8,6 +8,7 @@
 // Various Features
 #define UseDisplay        // Log information and actions to the Display // uses 18% of memory
 #define UseRealTimeClock  // Use the RTC                                // uses 1% of memory
+#define UseIoT            // Use the IoT module                         // uses ??% of memory
 
 //= INCLUDES =======================================================================================
 #if defined(DEBUG) || defined(RfLogsToSerial) || defined(I2CLogsToSerial)
@@ -25,7 +26,7 @@
 const byte LED_INDICATOR_PIN = LED_BUILTIN;  // choose the pin for the LED // D13
 //------------------------------------------------
 #ifdef DEBUG
-const byte TIME_TICK = 500;
+const byte TIME_TICK = 100;
 #else
 const byte TIME_TICK = 10;
 #endif
@@ -58,6 +59,8 @@ void setup() {
   menu_Setup();
   //
   rf433_Setup();
+  //
+  iot_Setup();
   //
   delay(TIME_TICK * 50);
   //
