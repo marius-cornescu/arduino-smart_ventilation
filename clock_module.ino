@@ -3,6 +3,7 @@
 //= DEFINES ========================================================================================
 
 //= INCLUDE ========================================================================================
+#include "Common.h"
 #include <DS3231.h>
 
 //= CONSTANTS ======================================================================================
@@ -16,24 +17,21 @@ struct Action *a1_ScheduledAction = &NoAction;
 struct Action *a2_ScheduledAction = &NoAction;
 
 #endif
+//==================================================================================================
 //**************************************************************************************************
 void clock_Setup() {
 #ifdef UseRealTimeClock
-
+#ifdef DEBUG
+  Serial.println("CLOCK:Setup >>>");
+#endif
+  //..............................
+  //..............................
+#ifdef DEBUG
+  Serial.println(">>> CLOCK:Setup");
+#endif
 #endif
 }
 //**************************************************************************************************
-//==================================================================================================
-void clock_GetTimeStamp(char *timestamp) {
-#ifdef UseRealTimeClock
-  DateTime now = myRTC.now();
-  sprintf(timestamp, "%02d/%02d/%02d %02d:%02d:%02d", now.day(), now.month(), now.year(), now.hour(), now.minute(), now.second());
-
-#ifdef DEBUG
-  Serial.print("Date/Time: "); Serial.println(timestamp);
-#endif
-#endif
-}
 //==================================================================================================
 void clock_Alarm1_SetInMinutesWithAction(byte extraMinutes, struct Action *scheduledAction) {
 #ifdef UseRealTimeClock
@@ -65,12 +63,13 @@ void clock_Alarm2_SetInMinutesWithAction(byte extraMinutes, struct Action *sched
 }
 //==================================================================================================
 void clock_TriggerIfAlarm() {
-  clock_Alarm1_TriggerIfAlarm();
-  clock_Alarm2_TriggerIfAlarm();
+  __Alarm1_TriggerIfAlarm();
+  __Alarm2_TriggerIfAlarm();
 }
 //==================================================================================================
-void clock_Alarm1_TriggerIfAlarm() {
 #ifdef UseRealTimeClock
+//==================================================================================================
+void __Alarm1_TriggerIfAlarm() {
   if (rtcClock.checkIfAlarm(1) && a1_ScheduledAction != &NoAction) {
     actions_ProcessAction(a1_ScheduledAction);
     //
@@ -82,11 +81,9 @@ void clock_Alarm1_TriggerIfAlarm() {
     //
     display_Clear2ndLine();
   }
-#endif
 }
 //==================================================================================================
-void clock_Alarm2_TriggerIfAlarm() {
-#ifdef UseRealTimeClock
+void __Alarm2_TriggerIfAlarm() {
   if (rtcClock.checkIfAlarm(2) && a2_ScheduledAction != &NoAction) {
     actions_ProcessAction(a2_ScheduledAction);
     //
@@ -98,18 +95,25 @@ void clock_Alarm2_TriggerIfAlarm() {
     //
     display_Clear2ndLine();
   }
-#endif
 }
 //==================================================================================================
-void clock_ResetAlarms() {
-#ifdef UseRealTimeClock
+void __ResetAlarms() {
   rtcClock.turnOffAlarm(1);
   rtcClock.turnOffAlarm(2);
   //
   display_Clear2ndLine();
+}
+//==================================================================================================
+void __GetTimeStamp(char *timestamp) {
+#ifdef UseRealTimeClock
+  DateTime now = myRTC.now();
+  sprintf(timestamp, "%02d/%02d/%02d %02d:%02d:%02d", now.day(), now.month(), now.year(), now.hour(), now.minute(), now.second());
+
+#ifdef DEBUG
+  Serial.print("Date/Time: "); Serial.println(timestamp);
+#endif
 #endif
 }
 //==================================================================================================
-
-//==================================================================================================
+#endif
 //==================================================================================================

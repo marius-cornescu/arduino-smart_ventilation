@@ -1,12 +1,19 @@
-//= INCLUDES =======================================================================================
+//= DEFINES ========================================================================================
+//= INCLUDE ========================================================================================
+#include "Common.h"
 #include "Actions.h"
 
 //= CONSTANTS ======================================================================================
-#define ACTION4_DELAY 5
 
-const Action *Actions[] = { &Action1, &Action2, &Action3, &Action4, &ActionVentOff, &ActionVentOn };
+// RELAYs
+const byte RELAY_1_PIN = 5;  // DIGITAL PORT 5
+const byte RELAY_2_PIN = 6;  // DIGITAL PORT 6
+const byte RELAY_3_PIN = 7;  // DIGITAL PORT 7
+const byte RELAY_4_PIN = 8;  // DIGITAL PORT 8
+//--------------------------------------------------------------------------------------------------
 
 //= VARIABLES ======================================================================================
+const Action *previousAction = &NoAction;
 // is the ventilation status pin on HIGH => should ventilation be running ?
 static bool isVentilationOnInV1 = true;
 
@@ -123,7 +130,7 @@ void __VentilationOn() {  // FLIP from 2 to 1, to go into low speed mode
 
 
 //##################################################################################################
-void actions_onVentilationOnInV1Change(bool newValue) {
+void actions_onSchedulerStatusChange(bool newValue) {
   if (isVentilationOnInV1 == newValue) {
     return;
   }
@@ -149,12 +156,12 @@ void debug_PrintActions() {
   Serial.println(buffer);
   Serial.println("--------------------------");
   for (byte i = 0; i < ARRAY_LEN(Actions); i = i + 1) {
-    debug_PrintAction(Actions[i]);
+    __PrintAction(Actions[i]);
   }
   Serial.println("--------------------------");
 }
 
-void debug_PrintAction(const Action *action) {
+void __PrintAction(const Action *action) {
   char buffer[200];
   sprintf(buffer, "Action {name=\"%s\", actionCode=%d, buttons=[ ",
           action->name, action->actionCode);

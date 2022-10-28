@@ -1,15 +1,78 @@
 //= DEFINES ========================================================================================
 //= INCLUDE ========================================================================================
+#include "Common.h"
+#include <RCSwitch.h>
+
 //= CONSTANTS ======================================================================================
+//------------------------------------------------
+const byte RF_INTERRUPT_D2_PIN = 0;  // RF Receiver on INT0 => pin D2
+//------------------------------------------------
+// Fast Check
+const byte RF_TARGET_PROTOCOL = 1;
+const byte RF_TARGET_BIT_COUNT = 24;
+//------------------------------------------------
 //= VARIABLES ======================================================================================
+RCSwitch rfRx = RCSwitch();
+
 //==================================================================================================
-#ifdef RfLogsToSerial
-static const char* __bin2tristate(const char* bin);
-static char* __dec2binWzerofill(unsigned long Dec, unsigned int bitLength);
+//**************************************************************************************************
+void rf433_Setup() {
+#ifdef DEBUG
+  Serial.println("RF433:Setup >>>");
 #endif
+  //..............................
+  rfRx.enableReceive(RF_INTERRUPT_D2_PIN);
+  //..............................
+  delay(TIME_TICK * 1);
+#ifdef DEBUG
+  Serial.println(">>> RF433:Setup");
+#endif
+}
+//**************************************************************************************************
 //==================================================================================================
-void rf433_printRxToSerial(unsigned long decimal, unsigned int length, unsigned int delay, unsigned int* raw, unsigned int protocol) {
+bool rf433_ActIfActivity() {
+  if (rfRx.available()) {
+    digitalWrite(LED_INDICATOR_PIN, HIGH);
+    unsigned long buttonId = rfRx.getReceivedValue();
+    if (__isRemoteCodeValid_FastCheck(buttonId, rfRx.getReceivedProtocol(), rfRx.getReceivedBitlength(), rfRx.getReceivedDelay(), rfRx.getReceivedRawdata())) {
+
+      const Action* currentAction = actions_ComputeActionForButton(buttonId);
+
+      if (currentAction->actionCode < ACTION_MAX_VALID) {
+        if (currentAction != previousAction) {
+          actions_ProcessAction(currentAction);
+        }
+
+        display_ShowProgress();
+      }
+    }
+
+    rfRx.resetAvailable();
+    digitalWrite(LED_INDICATOR_PIN, LOW);
+    //
+    return true;
+  }
+  return false;
+}
+//==================================================================================================
+bool __isRemoteCodeValid_FastCheck(unsigned long decimal, unsigned int protocol, unsigned int length, unsigned int delay, unsigned int* raw) {
 #ifdef RfLogsToSerial
+  __printRxToSerial(decimal, length, delay, raw, protocol);
+#endif
+
+  if ((protocol == RF_TARGET_PROTOCOL) && (length == RF_TARGET_BIT_COUNT)) {
+    return true;
+  } else {
+#ifdef DEBUG
+    Serial.println("???? Unknown RF code / wrong protocol or bit count");
+#endif
+    return false;
+  }
+}
+//==================================================================================================
+#ifdef RfLogsToSerial
+//==================================================================================================
+void __printRxToSerial(unsigned long decimal, unsigned int length, unsigned int delay, unsigned int* raw, unsigned int protocol) {
   const char* b = __dec2binWzerofill(decimal, length);
 
   char buffer[200];
@@ -24,10 +87,7 @@ void rf433_printRxToSerial(unsigned long decimal, unsigned int length, unsigned 
   }
   Serial.println();
   Serial.println();
-#endif
 }
-//==================================================================================================
-#ifdef RfLogsToSerial
 //==================================================================================================
 static const char* __bin2tristate(const char* bin) {
   static char returnValue[50];
@@ -72,3 +132,4 @@ static char* __dec2binWzerofill(unsigned long decimal, unsigned int bitLength) {
 }
 //==================================================================================================
 #endif
+//==================================================================================================

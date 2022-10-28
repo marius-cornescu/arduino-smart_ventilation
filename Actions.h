@@ -1,11 +1,17 @@
 #ifndef _HEADERFILE_ACTIONS
 #define _HEADERFILE_ACTIONS
 
-#define ARRAY_LEN(array) (sizeof(array)/sizeof(array[0]))
-
 //= CONSTANTS ======================================================================================
 //------------------------------------------------
 typedef void (*ActionFunction) ();
+//------------------------------------------------
+struct Action {
+  const char *name;
+  const char *description;
+  const byte actionCode;
+  ActionFunction function;
+  const unsigned long buttons[4];
+};
 //------------------------------------------------
 
 const byte ACTION_MAX_VALID = 90; // any action with higher value will be ignored
@@ -17,20 +23,12 @@ const byte ACTION_2 = 2;
 const byte ACTION_3 = 3;
 //
 const byte ACTION_4 = 4;
+const byte ACTION4_DELAY = 5;
 //
 const byte ACTION_5 = 5;
 const byte ACTION_6 = 6;
 //
 const byte ACTION_7 = 7; // not used
-
-//------------------------------------------------
-struct Action {
-  const char *name;
-  const char *description;
-  const byte actionCode;
-  ActionFunction function;
-  const unsigned long buttons[4];
-};
 
 //------------------------------------------------
 Action NoAction {
@@ -41,6 +39,7 @@ Action NoAction {
   /*buttons*/     {  }
 };
 //------------------------------------------------
+
 //------------------------------------------------
 Action Action1 {
   /*name*/        "Vent-1",
@@ -91,8 +90,10 @@ Action ActionVentOn {
   /*buttons*/     {  }
 };
 //------------------------------------------------
-//------------------------------------------------
 
+
+//------------------------------------------------
+const Action *Actions[] = { &Action1, &Action2, &Action3, &Action4, &ActionVentOff, &ActionVentOn };
 //------------------------------------------------
 //==================================================================================================
 #endif // _HEADERFILE_ACTIONS

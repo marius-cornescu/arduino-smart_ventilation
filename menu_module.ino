@@ -1,6 +1,7 @@
-
 //= DEFINES ========================================================================================
 //= INCLUDE ========================================================================================
+#include "Common.h"
+
 //= CONSTANTS ======================================================================================
 const byte LED_RED_1 = P0;     // 
 
@@ -28,11 +29,13 @@ const byte BTN_ENTER = 8;
 PCF8575 buttons(BUTTONS_I2C_ADDRESS);  // add switches to lines  (used as input)
 
 
+//==================================================================================================
 //**************************************************************************************************
 void menu_Setup() {
 #ifdef DEBUG
   Serial.println("MENU:Setup >>>");
 #endif
+  //..............................
   // Set pinMode
   // Side A
   buttons.pinMode(P0, OUTPUT);
@@ -65,23 +68,27 @@ void menu_Setup() {
 //**************************************************************************************************
 //==================================================================================================
 void menu_ActIfActivity() {
-  byte button = get_button(buttons);
+  byte button = __readPressedButton(buttons);
 
-  if(button == BTN_ENTER) {
+  if(button == BTN_ENTER) { // is MANUAL mode ?
     digitalWrite(LED_INDICATOR_PIN, HIGH);
     //
     display_Print2ndLine("<MANUAL>");
     display_ShowProgress();
     //
-    menu_print();
-    menu_process_loop(buttons);
+    __printMenu();
+    __processingLoop(buttons);
     //
     display_Print2ndLine("");
     digitalWrite(LED_INDICATOR_PIN, LOW);
   }
 }
 //==================================================================================================
-byte get_button(PCF8575 &io) {
+void __printMenu() {
+  // print the menu item with options; depending on possition
+}
+//==================================================================================================
+byte __readPressedButton(PCF8575 &io) {
   byte response = BTN_NONE;
   PCF8575::DigitalInput io_vals = io.digitalReadAll();
 
@@ -116,31 +123,27 @@ byte get_button(PCF8575 &io) {
   return response;
 }
 //==================================================================================================
-void menu_print() {
-
-}
-//==================================================================================================
-void menu_process_loop(PCF8575 &io) {
+void __processingLoop(PCF8575 &io) {
   byte prevs_button = BTN_NONE;
-  byte button = get_button(io);
+  byte button = __readPressedButton(io);
 
   while(button != BTN_BACK) {
     //
     if (button != BTN_NONE) {
-      io.digitalWrite(LED_RED_1, ON);// indication of activity
-      menu_process_button_action(button, prevs_button);
+      io.digitalWrite(LED_RED_1, ON); // indication of activity
+      __processButtonAction(button, prevs_button);
     }
     //
     delay(TIME_TICK);
-    io.digitalWrite(LED_RED_1, OFF);// indication of activity
+    io.digitalWrite(LED_RED_1, OFF); // indication of activity
     prevs_button = button;
-    button = get_button(io);
+    button = __readPressedButton(io);
   }
 
   io.digitalWrite(LED_RED_1, OFF);
 }
 //==================================================================================================
-void menu_process_button_action(byte &button, byte &prevs_button) {
+void __processButtonAction(byte &button, byte &prevs_button) {
   if(button == prevs_button) {
     return; // ignore phake multi-press
   }
