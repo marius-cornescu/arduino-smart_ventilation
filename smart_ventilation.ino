@@ -40,7 +40,6 @@
 
 */
 //= DEFINES ========================================================================================
-#define SW_VERSION "1.0.3"
 //------------------------------------------------
 // Various debug options
 //#define DEBUG
@@ -56,6 +55,7 @@
 #include <stdio.h>  // for function sprintf
 #endif
 
+#include "Common.h"
 #include "Remotes.h"
 #include "Actions.h"
 
@@ -86,14 +86,11 @@ const byte RELAY_2_PIN = 6;  // DIGITAL PORT 6
 const byte RELAY_3_PIN = 7;  // DIGITAL PORT 7
 const byte RELAY_4_PIN = 8;  // DIGITAL PORT 8
 //--------------------------------------------------------------------------------------------------
-const byte VENT_STATUS_PIN = 4;  // DIGITAL PORT 4
 //
 //= VARIABLES ======================================================================================
 RCSwitch rfRx = RCSwitch();
 
 const Action *previousAction = &NoAction;
-
-static unsigned int lastVentStatusState = HIGH;
 
 //==================================================================================================
 //**************************************************************************************************
@@ -105,7 +102,6 @@ void setup() {
 #endif
   // initialize digital pin LED_INDICATOR_PIN as an output.
   pinMode(LED_INDICATOR_PIN, OUTPUT);
-  pinMode(VENT_STATUS_PIN, INPUT);
   //
   digitalWrite(LED_INDICATOR_PIN, HIGH);
   // i2C
@@ -114,11 +110,11 @@ void setup() {
   delay(TIME_TICK * 50);
   //
   display_Setup();
-  char boot_message[16];
-  sprintf(boot_message, "<BOOT v%8s>", SW_VERSION);
-  display_Print2ndLine(boot_message);
+  __printVersionAtBoot();
   //
   actions_Setup();
+  //
+  scheduler_Setup();
   //
   menu_Setup();
   //
@@ -158,7 +154,7 @@ void loop() {
   } else {
     // GETS EXECUTED CONTINUOUSLY WHEN NO MESSAGE
     //
-    checkVentilationStatus();
+    scheduler_CheckStatus();
     //
     clock_TriggerIfAlarm();
     //
@@ -170,7 +166,7 @@ void loop() {
 }
 //==================================================================================================
 bool isRemoteCodeValid_FastCheck(unsigned long decimal, unsigned int protocol, unsigned int length, unsigned int delay, unsigned int *raw) {
-  printRxToSerial(decimal, length, delay, raw, protocol);
+  rf433_printRxToSerial(decimal, length, delay, raw, protocol);
 
   if ((protocol == RF_TARGET_PROTOCOL) && (length == RF_TARGET_BIT_COUNT)) {
     return true;
@@ -182,12 +178,10 @@ bool isRemoteCodeValid_FastCheck(unsigned long decimal, unsigned int protocol, u
   }
 }
 //==================================================================================================
-void checkVentilationStatus() {
-  unsigned int current = digitalRead(VENT_STATUS_PIN);
-  if (current != lastVentStatusState) {
-    lastVentStatusState = current;
-    actions_onVentilationOnInV1Change(lastVentStatusState == HIGH);
-  }
+void __printVersionAtBoot() {
+  char boot_message[16];
+  sprintf(boot_message, "<BOOT v%8s>", SW_VERSION);
+  display_Print2ndLine(boot_message);
 }
 //==================================================================================================
 //==================================================================================================
