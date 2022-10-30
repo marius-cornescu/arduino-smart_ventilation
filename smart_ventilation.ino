@@ -83,10 +83,10 @@ void loop() {
     //
     clock_TriggerIfAlarm();
     //
+    iot_ActIfActivity();
+    //
     menu_ActIfActivity();
     delay(TIME_TICK * 10);
-    //
-    //display_ShowProgress();
   }
 }
 //==================================================================================================
