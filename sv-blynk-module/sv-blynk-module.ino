@@ -17,7 +17,7 @@
 // Built-In LED: LOW is on and HIGH is off for blue led
 #define ESP8266_BUILTIN_LED ESP8266_GPIO2
 
-#define SEC 1000                // 1 second
+#define SEC 1000  // 1 second
 
 //= INCLUDES =======================================================================================
 #include "Secrets.h"
@@ -39,8 +39,8 @@ BlynkTimer timer;
 //==================================================================================================
 // function will run every time Blynk connection is established
 BLYNK_CONNECTED() {
-  Blynk.sendInternal("meta", "set", "Device Model", "ESP8266");
-  Blynk.sendInternal("meta", "set", "Serial Number", "ESP-Blynk-001");
+  Blynk.sendInternal("meta", "set", "Device Model", "SV-Bridge");
+  Blynk.sendInternal("meta", "set", "Serial Number", "ESP01s-SmartV");
 
   // Request Blynk server to re-send latest values for all pins
   Blynk.syncAll();
@@ -63,14 +63,19 @@ void setup() {
 #ifdef DEBUG
   // Open serial communications and wait for port to open:
   Serial.begin(115200);
-  Serial.println("START-UP");
+  Serial.println("VentMaster:Setup >>>");
 #endif
+  //..............................
   Blynk.begin(auth, ssid, pass);
   // Setup a function to be called every second
   timer.setInterval(1000L, timerEvent);
   //
   pinMode(LED_INDICATOR_PIN, OUTPUT);
   blinkPinXTimes(LED_INDICATOR_PIN, 1);
+  //..............................
+#ifdef DEBUG
+  Serial.println(">>> VentMaster:Setup");
+#endif
 }
 //**************************************************************************************************
 //==================================================================================================
