@@ -41,6 +41,7 @@ BlynkTimer timer;
 //..............................
 
 byte currentVentSpeed = 0;
+byte currentActionLabel = 0;
 byte currentActionCode = 0;
 
 //##################################################################################################
@@ -69,6 +70,7 @@ BLYNK_WRITE(V1) {                           // values [1..90]
 
   if (newActionCode != currentActionCode) {
     currentActionCode = newActionCode;
+    currentActionLabel = newActionCode;
     //commActOnPollMessage();
     // TODO: update partner data with COMMAND_PUSH_POLL
     // Clear the ActionCode
@@ -85,6 +87,7 @@ void timerEvent() {
   if (haveToPublish) {
     Blynk.virtualWrite(V0, currentVentSpeed);
     Blynk.virtualWrite(V1, currentActionCode);
+    Blynk.virtualWrite(V2, currentActionLabel);
     haveToPublish = false;
   }
 }
@@ -126,7 +129,7 @@ byte getValue2() {
   return currentActionCode;
 }
 void setValue2(byte value2) {
-  currentActionCode = value2;
+  currentActionLabel = value2;
 }
 //==================================================================================================
 //==================================================================================================

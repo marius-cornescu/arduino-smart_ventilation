@@ -76,6 +76,23 @@ const Action *actions_ComputeActionForButton(unsigned long buttonId) {
   return &NoAction;
 }
 //==================================================================================================
+const Action *actions_ComputeActionForCode(byte actionCode) {
+  for (byte act = 0; act < ARRAY_LEN(Actions); act++) {
+    const Action *action = Actions[act];
+    if (action->actionCode == actionCode) {
+      return action;
+    }
+  }
+  return &NoAction;
+}
+//==================================================================================================
+bool actions_ShouldProcessAction(const Action *action) {
+  if(action->actionCode > 0 && action->actionCode < ACTION_MAX_VALID && action != previousAction) {
+    return true;
+  }
+  return false;
+}
+//==================================================================================================
 void actions_ProcessAction(const Action *action) {
   if (action == &NoAction) {
     return;
@@ -85,6 +102,8 @@ void actions_ProcessAction(const Action *action) {
   //
   display_Print1stLine(action);
   action->function();
+  //
+  iot_actOnNewAction();
 }
 //==================================================================================================
 //==================================================================================================

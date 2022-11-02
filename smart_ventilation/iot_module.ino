@@ -9,6 +9,8 @@
 //----------------------------------
 
 //= VARIABLES ======================================================================================
+byte currentVentSpeed = 0;
+byte currentActionCode = 0;
 
 //==================================================================================================
 //**************************************************************************************************
@@ -31,114 +33,72 @@ void iot_Setup() {
 //==================================================================================================
 void iot_ActIfActivity() {
 #ifdef UseIoT
-  if (actOnAction()) {
-    actOnDataChanged();
-    // TODO: act on action or trigger ventilation
-    commActOnPollMessage();
-  }
-  //
   if (hasMessageInInboxThenReadMessage()) {
     commActOnMessage();
     if (haveToPublish) {
-      actOnDataChanged();
+      __actOnPartnerDataChanged();
     }
   }
+#endif
+}
+//==================================================================================================
+void iot_actOnNewAction() {
+#ifdef UseIoT
+  currentActionCode = previousAction->actionCode;
+
+  if (previousAction == &ActionVentOff) {
+    currentVentSpeed = 0;
+  }
+  if (previousAction == &Action1) {
+    currentVentSpeed = 1;
+  }
+  if (previousAction == &Action2) {
+    currentVentSpeed = 2;
+  }
+  if (previousAction == &Action3) {
+    currentVentSpeed = 3;
+  }
+
+  commActOnPollMessage();
 #endif
 }
 //==================================================================================================
 #ifdef UseIoT
 //==================================================================================================
-bool actOnAction() {
-  byte newVentSpeed = currentVentSpeed;
-  if (isV1ButtonPressed()) {
-    newVentSpeed = 1;
+void __actOnPartnerDataChanged() {
+  const Action* currentAction = actions_ComputeActionForCode(currentActionCode);
+  if (actions_ShouldProcessAction(currentAction)) {
+    actions_ProcessAction(currentAction);
+    display_ShowProgress();
   }
-  if (isV2ButtonPressed()) {
-    newVentSpeed = 2;
-  }
-  if (isV3ButtonPressed()) {
-    newVentSpeed = 3;
-  }
-
-  if (newVentSpeed != currentVentSpeed) {
-    currentVentSpeed = newVentSpeed;
-    return true;
-  }
-  return false;
 }
-//==================================================================================================
-void actOnDataChanged() {
-  turnAllLedsOff();
-  turnVLedsOn();
-}
-//==================================================================================================
-void turnAllLedsOff() {
-  digitalWrite(PIN_LED_V1, LOW);
-  digitalWrite(PIN_LED_V2, LOW);
-  digitalWrite(PIN_LED_V3, LOW);
-}
-//==================================================================================================
-void turnVLedsOn() {
-  digitalWrite(13 - currentVentSpeed, HIGH);
-}
-//==================================================================================================
-bool isV1ButtonPressed() {
-  byte currentBtnState = digitalRead(PIN_BTN_V1);
-  if (currentBtnState != lastV1BtnState) {
-    lastV1BtnState = currentBtnState;
-    if (currentBtnState == HIGH) {
-#ifdef DEBUG
-      Serial.println("V1");
-#endif
-      return true;
-    }
-  }
-  return false;
-}
-//==================================================================================================
-bool isV2ButtonPressed() {
-  byte currentBtnState = digitalRead(PIN_BTN_V2);
-  if (currentBtnState != lastV2BtnState) {
-    lastV2BtnState = currentBtnState;
-    if (currentBtnState == HIGH) {
-#ifdef DEBUG
-      Serial.println("V2");
-#endif
-      return true;
-    }
-  }
-  return false;
-}
-//==================================================================================================
-bool isV3ButtonPressed() {
-  byte currentBtnState = digitalRead(PIN_BTN_V3);
-  if (currentBtnState != lastV3BtnState) {
-    lastV3BtnState = currentBtnState;
-    if (currentBtnState == HIGH) {
-#ifdef DEBUG
-      Serial.println("V3");
-#endif
-      return true;
-    }
-  }
-  return false;
-}
-//==================================================================================================
-
-
 //==================================================================================================
 //==================================================================================================
 byte getValue1() {
   return currentVentSpeed;
 }
-void setValue1(byte value1) {
-  currentVentSpeed = value1;
+void setValue1(byte ventSpeed) {
+  if (ventSpeed == 0) {
+    currentActionCode = ActionVentOff.actionCode;
+  }
+  if (ventSpeed == 1) {
+    currentActionCode = Action1.actionCode;
+  }
+  if (ventSpeed == 2) {
+    currentActionCode = Action2.actionCode;
+  }
+  if (ventSpeed == 3) {
+    currentActionCode = Action3.actionCode;
+  }
 }
+//----------------------------------
 byte getValue2() {
   return currentActionCode;
 }
-void setValue2(byte value2) {
-  currentActionCode = value2;
+void setValue2(byte actionCode) {
+  if (actionCode > 0) {
+    currentActionCode = actionCode;
+  }
 }
 //==================================================================================================
 #endif

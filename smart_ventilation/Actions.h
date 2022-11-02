@@ -16,7 +16,7 @@ struct Action {
 
 const byte ACTION_MAX_VALID = 90; // any action with higher value will be ignored
 //
-const byte ACTION_NOP = 99;
+const byte ACTION_NOP = 0;
 //
 const byte ACTION_1 = 1;
 const byte ACTION_2 = 2;
