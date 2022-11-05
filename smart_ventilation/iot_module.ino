@@ -55,7 +55,7 @@ void iot_actOnNewAction() {
   if (previousAction == &Action2) {
     currentVentSpeed = 2;
   }
-  if (previousAction == &Action3) {
+  if (previousAction == &Action3 || previousAction == &Action4) {
     currentVentSpeed = 3;
   }
 
