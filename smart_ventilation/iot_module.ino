@@ -1,14 +1,17 @@
 //= DEFINES ========================================================================================
-#define COMM_ROLE "OFFLINE-WORKER"
 
-//= INCLUDE ========================================================================================
+//= INCLUDES =======================================================================================
 #include "Common.h"
 #include "Artizan-CommProtocol.h"
 
 //= CONSTANTS ======================================================================================
 //----------------------------------
+bool processReceivedMessage(const char* message);
+const char* prepareMessageToSend();
 
 //= VARIABLES ======================================================================================
+RtznCommProtocol commProto("OFFLINE-WORKER", &processReceivedMessage, &prepareMessageToSend);
+
 byte currentVentSpeed = 0;
 byte currentActionCode = 0;
 
@@ -33,9 +36,9 @@ void iot_Setup() {
 //==================================================================================================
 void iot_ActIfActivity() {
 #ifdef UseIoT
-  if (hasMessageInInboxThenReadMessage()) {
-    commActOnMessage();
-    if (haveToPublish) {
+  if (commProto.hasMessageInInboxThenReadMessage()) {
+    commProto.actOnMessage();
+    if (commProto.isHaveToPublish()) {
       __actOnPartnerDataChanged();
     }
   }
@@ -59,7 +62,7 @@ void iot_actOnNewAction() {
     currentVentSpeed = 3;
   }
 
-  commActOnPollMessage();
+  commProto.actOnPollMessage();
 #endif
 }
 //==================================================================================================
@@ -74,31 +77,42 @@ void __actOnPartnerDataChanged() {
 }
 //==================================================================================================
 //==================================================================================================
-byte getValue1() {
-  return currentVentSpeed;
+bool processReceivedMessage(const char* message) {
+  bool haveToPublish = false;
+  //------------------------------------
+  byte value1 = message[0] - '0';
+  if (currentVentSpeed != value1) {
+    haveToPublish = true;
+
+    if (value1 == 0) {
+      currentActionCode = ActionVentOff.actionCode;
+    }
+    if (value1 == 1) {
+      currentActionCode = Action1.actionCode;
+    }
+    if (value1 == 2) {
+      currentActionCode = Action2.actionCode;
+    }
+    if (value1 == 3) {
+      currentActionCode = Action3.actionCode;
+    }
+  }
+  //------------------------------------
+  byte actionCode = message[1] - '0';
+  if (currentActionCode != actionCode) {
+    if (actionCode > 0) {
+      currentActionCode = actionCode;
+      haveToPublish = true;
+    }
+  }
+  //------------------------------------
+  return haveToPublish;
 }
-void setValue1(byte ventSpeed) {
-  if (ventSpeed == 0) {
-    currentActionCode = ActionVentOff.actionCode;
-  }
-  if (ventSpeed == 1) {
-    currentActionCode = Action1.actionCode;
-  }
-  if (ventSpeed == 2) {
-    currentActionCode = Action2.actionCode;
-  }
-  if (ventSpeed == 3) {
-    currentActionCode = Action3.actionCode;
-  }
-}
-//----------------------------------
-byte getValue2() {
-  return currentActionCode;
-}
-void setValue2(byte actionCode) {
-  if (actionCode > 0) {
-    currentActionCode = actionCode;
-  }
+
+const char* prepareMessageToSend() {
+  char* message = new char[2];
+  sprintf(message, "%1u%1u", currentVentSpeed, currentActionCode);
+  return message;
 }
 //==================================================================================================
 #endif

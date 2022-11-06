@@ -18,8 +18,6 @@
 
 #define SEC 1000  // 1 second
 
-#define COMM_ROLE "ONLINE-WORKER"
-
 //= INCLUDES =======================================================================================
 #include "Secrets.h"
 #include <ESP8266WiFi.h>
@@ -36,9 +34,14 @@ const char pass[] = WIFI_PASSWORD;
 //
 const int LED_INDICATOR_PIN = LED_BUILTIN;
 
+bool processReceivedMessage(const char* message);
+const char* prepareMessageToSend();
+
 //= VARIABLES ======================================================================================
 BlynkTimer timer;
 //..............................
+
+RtznCommProtocol commProto("ONLINE-WORKER", &processReceivedMessage, &prepareMessageToSend);
 
 byte currentVentSpeed = 0;
 byte currentActionLabel = 0;
@@ -60,7 +63,7 @@ BLYNK_WRITE(V0) {                           // values [0..3]
 
   if (newVentSpeed != currentVentSpeed) {
     currentVentSpeed = newVentSpeed;
-    commActOnPollMessage();
+    commProto.actOnPollMessage();
   }
 }
 //##################################################################################################
@@ -71,24 +74,25 @@ BLYNK_WRITE(V1) {                           // values [1..90]
   if (newActionCode != currentActionCode) {
     currentActionCode = newActionCode;
     currentActionLabel = newActionCode;
-    //commActOnPollMessage();
-    // TODO: update partner data with COMMAND_PUSH_POLL
+    commProto.actOnPollMessage();
+    
     // Clear the ActionCode
     currentActionCode = 0;
+    Blynk.virtualWrite(V1, currentActionCode);
   }
 }
 //##################################################################################################
 void timerEvent() {
   // You can send any value at any time. Don't send more that 10 values per second.
-  if (hasMessageInInboxThenReadMessage()) {
-    commActOnMessage();
+  if (commProto.hasMessageInInboxThenReadMessage()) {
+    commProto.actOnMessage();
   }
   //
-  if (haveToPublish) {
+  if (commProto.isHaveToPublish()) {
     Blynk.virtualWrite(V0, currentVentSpeed);
     Blynk.virtualWrite(V1, currentActionCode);
     Blynk.virtualWrite(V2, currentActionLabel);
-    haveToPublish = false;
+    commProto.setHaveToPublish(false);
   }
 }
 //##################################################################################################
@@ -119,17 +123,28 @@ void loop() {
 }
 //OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 //==================================================================================================
-byte getValue1() {
-  return currentVentSpeed;
+bool processReceivedMessage(const char* message) {
+  bool haveToPublish = false;
+  //------------------------------------
+  byte value1 = message[0] - '0';
+  if (currentVentSpeed != value1) {
+    currentVentSpeed = value1;
+    haveToPublish = true;
+  }
+  //------------------------------------
+  byte value2 = message[1] - '0';
+  if (currentActionLabel != value2) {
+    currentActionLabel = value2;
+    haveToPublish = true;
+  }
+  //------------------------------------
+  return haveToPublish;
 }
-void setValue1(byte value1) {
-  currentVentSpeed = value1;
-}
-byte getValue2() {
-  return currentActionCode;
-}
-void setValue2(byte value2) {
-  currentActionLabel = value2;
+//==================================================================================================
+const char* prepareMessageToSend() {
+  char* message = new char[2];
+  sprintf(message, "%1u%1u", currentVentSpeed, currentActionCode);
+  return message;
 }
 //==================================================================================================
 //==================================================================================================
