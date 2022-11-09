@@ -13,7 +13,7 @@ const char* prepareMessageToSend();
 RtznCommProtocol commProto("OFFLINE-WORKER", &processReceivedMessage, &prepareMessageToSend);
 
 byte currentVentSpeed = 0;
-byte currentActionCode = 0;
+byte currentActionCode = ACTION_NOP;
 
 //==================================================================================================
 //**************************************************************************************************
@@ -45,22 +45,9 @@ void iot_ActIfActivity() {
 #endif
 }
 //==================================================================================================
-void iot_actOnNewAction() {
+void iot_actOnNewAction(const Action* action) {
 #ifdef UseIoT
-  currentActionCode = previousAction->actionCode;
-
-  if (previousAction == &ActionVentOff) {
-    currentVentSpeed = 0;
-  }
-  if (previousAction == &Action1) {
-    currentVentSpeed = 1;
-  }
-  if (previousAction == &Action2) {
-    currentVentSpeed = 2;
-  }
-  if (previousAction == &Action3 || previousAction == &Action4) {
-    currentVentSpeed = 3;
-  }
+  currentActionCode = action->actionCode;
 
   commProto.actOnPollMessage();
 #endif
@@ -80,38 +67,26 @@ void __actOnPartnerDataChanged() {
 bool processReceivedMessage(const char* message) {
   bool haveToPublish = false;
   //------------------------------------
-  byte value1 = message[0] - '0';
-  if (currentVentSpeed != value1) {
-    haveToPublish = true;
-
-    if (value1 == 0) {
-      currentActionCode = ActionVentOff.actionCode;
-    }
-    if (value1 == 1) {
-      currentActionCode = Action1.actionCode;
-    }
-    if (value1 == 2) {
-      currentActionCode = Action2.actionCode;
-    }
-    if (value1 == 3) {
-      currentActionCode = Action3.actionCode;
-    }
-  }
+  byte newVentSpeed = message[0] - (byte)'0';
+  // ignore - the meat is in the action
   //------------------------------------
-  byte actionCode = message[1] - '0';
-  if (currentActionCode != actionCode) {
-    if (actionCode > 0) {
-      currentActionCode = actionCode;
+  byte newActionCode = message[1] - (byte)'0';
+  if (currentActionCode != newActionCode) {
+    if (newActionCode > ACTION_NOP) {
+      currentActionCode = newActionCode;
       haveToPublish = true;
     }
   }
   //------------------------------------
   return haveToPublish;
 }
-
+//==================================================================================================
 const char* prepareMessageToSend() {
-  char* message = new char[2];
-  sprintf(message, "%1u%1u", currentVentSpeed, currentActionCode);
+  char* message = new char[4];
+  memset(message, 0, 4);
+  message[0] = currentVentSpeed + (byte)'0';
+  message[1] = currentActionCode + (byte)'0';
+
   return message;
 }
 //==================================================================================================

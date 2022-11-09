@@ -38,10 +38,10 @@ void actions_Setup() {
 void __SetupFunctionsForActions() {
   NoAction.function = __NoAction;
   //
-  Action1.function = __VentilationSpeed1;
-  Action2.function = __VentilationSpeed2;
-  Action3.function = __VentilationSpeed3;
-  Action4.function = __ACTION4;
+  ActionVent1.function = __VentilationSpeed1;
+  ActionVent2.function = __VentilationSpeed2;
+  ActionVent3.function = __VentilationSpeed3;
+  ActionVent3Vent1.function = __ACTION4;
   //
   ActionVentOff.function = __VentilationOff;
   ActionVentOn.function = __VentilationOn;
@@ -77,13 +77,7 @@ const Action *actions_ComputeActionForButton(unsigned long buttonId) {
 }
 //==================================================================================================
 const Action *actions_ComputeActionForCode(byte actionCode) {
-  for (byte act = 0; act < ARRAY_LEN(Actions); act++) {
-    const Action *action = Actions[act];
-    if (action->actionCode == actionCode) {
-      return action;
-    }
-  }
-  return &NoAction;
+  return getActionByActionCode(actionCode);
 }
 //==================================================================================================
 bool actions_ShouldProcessAction(const Action *action) {
@@ -98,12 +92,12 @@ void actions_ProcessAction(const Action *action) {
     return;
   }
   //
-  previousAction = action;
-  //
   display_Print1stLine(action);
   action->function();
   //
-  iot_actOnNewAction();
+  iot_actOnNewAction(action);
+  //
+  previousAction = action;
 }
 //==================================================================================================
 //==================================================================================================
@@ -131,7 +125,7 @@ void __VentilationSpeed3() {
 //==================================================================================================
 void __ACTION4() {
   __VentilationSpeed3();
-  clock_Alarm1_SetInMinutesWithAction(ACTION4_DELAY, &Action1);
+  clock_Alarm1_SetInMinutesWithAction(ACTION4_DELAY, &ActionVent1);
 }
 //==================================================================================================
 void __VentilationOff() {
@@ -143,7 +137,7 @@ void __VentilationOff() {
 void __VentilationOn() {  // FLIP from 2 to 1, to go into low speed mode
   __VentilationSpeed2();
   delay(TIME_TICK * 50);
-  actions_ProcessAction(&Action1);
+  actions_ProcessAction(&ActionVent1);
 }
 //==================================================================================================
 
@@ -156,11 +150,11 @@ void actions_onSchedulerStatusChange(bool newValue) {
   isVentilationOnInV1 = newValue;
 
   if (isVentilationOnInV1) {
-    if ((previousAction == &ActionVentOff) || (previousAction == &Action1)) {
+    if ((previousAction == &ActionVentOff) || (previousAction == &ActionVent1)) {
       actions_ProcessAction(&ActionVentOn);
     }
   } else {
-    if (previousAction == &Action1) {
+    if (previousAction == &ActionVent1) {
       actions_ProcessAction(&ActionVentOff);
     }
   }

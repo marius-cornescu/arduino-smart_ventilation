@@ -156,13 +156,13 @@ void __processButtonAction(byte &button, byte &prevs_button) {
 
   switch (button) {
     case BTN_VENTILATION_1:
-      actions_ProcessAction(&Action1);
+      actions_ProcessAction(&ActionVent1);
       break;
     case BTN_VENTILATION_2:
-      actions_ProcessAction(&Action2);
+      actions_ProcessAction(&ActionVent2);
       break;
     case BTN_VENTILATION_3:
-      actions_ProcessAction(&Action3);
+      actions_ProcessAction(&ActionVent3);
       break;
     case BTN_UP:
       // statements

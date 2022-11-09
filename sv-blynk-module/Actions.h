@@ -46,7 +46,7 @@ Action ActionVent1 {
   /*description*/ "Vent Speed 1",
   /*actionCode*/  ACTION_1,
   /*function*/    0,
-  /*buttons*/     { KitchenHoodRemote.button1, Remote1.button1, Remote2.button1 }
+  /*buttons*/     {  }
 };
 //------------------------------------------------
 Action ActionVent2 {
@@ -54,7 +54,7 @@ Action ActionVent2 {
   /*description*/ "Vent Speed 2",
   /*actionCode*/  ACTION_2,
   /*function*/    0,
-  /*buttons*/     { KitchenHoodRemote.button2, Remote2.button2 }
+  /*buttons*/     {  }
 };
 //------------------------------------------------
 Action ActionVent3 {
@@ -62,7 +62,7 @@ Action ActionVent3 {
   /*description*/ "Vent Speed 3",
   /*actionCode*/  ACTION_3,
   /*function*/    0,
-  /*buttons*/     { KitchenHoodRemote.button3, Remote2.button3 }
+  /*buttons*/     {  }
 };
 //------------------------------------------------
 Action ActionVent3Vent1 {
@@ -70,7 +70,7 @@ Action ActionVent3Vent1 {
   /*description*/ "Vent-S3(*5m) -> Vent-S1",
   /*actionCode*/  ACTION_4,
   /*function*/    0,
-  /*buttons*/     { Remote1.button2, Remote1.button3, Remote1.button4, ProgRemote1.button1 }
+  /*buttons*/     {  }
 };
 //------------------------------------------------
 //------------------------------------------------

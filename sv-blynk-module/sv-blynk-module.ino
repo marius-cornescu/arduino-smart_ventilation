@@ -3,7 +3,6 @@
   -------------------------------
   -------------------------------
   -------------------------------
-
 */
 //= DEFINES ========================================================================================
 //
@@ -16,6 +15,8 @@
 //#define BLYNK_PRINT Serial
 //#define DEBUG
 
+#define ARRAY_LEN(array) (sizeof(array)/sizeof(array[0]))
+
 #define SEC 1000  // 1 second
 
 //= INCLUDES =======================================================================================
@@ -25,6 +26,7 @@
 #include <BlynkSimpleEsp8266_SSL.h>
 
 #include "Artizan-CommProtocol.h"
+#include "Actions.h"
 
 //= CONSTANTS ======================================================================================
 const char auth[] = BLYNK_AUTH_TOKEN;
@@ -44,8 +46,9 @@ BlynkTimer timer;
 RtznCommProtocol commProto("ONLINE-WORKER", &processReceivedMessage, &prepareMessageToSend);
 
 byte currentVentSpeed = 0;
-byte currentActionLabel = 0;
-byte currentActionCode = 0;
+byte currentActionCode = ACTION_NOP;
+
+const char* currentActionLabel = (&NoAction)->description;
 
 //##################################################################################################
 // function will run every time Blynk connection is established
@@ -54,7 +57,7 @@ BLYNK_CONNECTED() {
   Blynk.sendInternal("meta", "set", "Serial Number", "ESP01s-SmartV");
 
   // Request Blynk server to re-send latest values for all pins
-  Blynk.syncAll();
+  // Blynk.syncAll();
 }
 //##################################################################################################
 // will run every time Slider Widget writes values to Virtual Pin V0
@@ -62,8 +65,13 @@ BLYNK_WRITE(V0) {                           // values [0..3]
   byte newVentSpeed = (byte)param.asInt();  // assigning incoming value from pin V0 to a variable
 
   if (newVentSpeed != currentVentSpeed) {
+    currentActionCode = actionCodeFromVentSpeed(newVentSpeed);
     currentVentSpeed = newVentSpeed;
+
     commProto.actOnPollMessage();
+
+    // Clear the ActionCode
+    currentActionCode = 0;
   }
 }
 //##################################################################################################
@@ -72,10 +80,13 @@ BLYNK_WRITE(V1) {                           // values [1..90]
   int newActionCode = (byte)param.asInt();  // assigning incoming value from pin V1 to a variable
 
   if (newActionCode != currentActionCode) {
-    currentActionCode = newActionCode;
-    currentActionLabel = newActionCode;
+    const Action* currentAction = getActionByActionCode(newActionCode);
+
+    currentActionCode = currentAction->actionCode;
+    currentActionLabel = currentAction->description;
+
     commProto.actOnPollMessage();
-    
+
     // Clear the ActionCode
     currentActionCode = 0;
     Blynk.virtualWrite(V1, currentActionCode);
@@ -126,15 +137,16 @@ void loop() {
 bool processReceivedMessage(const char* message) {
   bool haveToPublish = false;
   //------------------------------------
-  byte value1 = message[0] - '0';
-  if (currentVentSpeed != value1) {
-    currentVentSpeed = value1;
-    haveToPublish = true;
-  }
+  byte newVentSpeed = message[0] - (byte)'0';
+  // ignore - the meat is in the action
   //------------------------------------
-  byte value2 = message[1] - '0';
-  if (currentActionLabel != value2) {
-    currentActionLabel = value2;
+  byte newActionCode = message[1] - (byte)'0';
+  if (ACTION_NOP != newActionCode) {
+    const Action* newAction = getActionByActionCode(newActionCode);
+    
+    currentVentSpeed = ventSpeedFromActionCode(newAction);
+    currentActionLabel = newAction->description;
+
     haveToPublish = true;
   }
   //------------------------------------
@@ -142,9 +154,54 @@ bool processReceivedMessage(const char* message) {
 }
 //==================================================================================================
 const char* prepareMessageToSend() {
-  char* message = new char[2];
-  sprintf(message, "%1u%1u", currentVentSpeed, currentActionCode);
+  char* message = new char[4];
+  memset(message, 0, 4);
+  message[0] = currentVentSpeed + (byte)'0';
+  message[1] = currentActionCode + (byte)'0';
+
   return message;
+}
+//==================================================================================================
+byte actionCodeFromVentSpeed(byte newVentSpeed) {
+  byte newActionCode = ACTION_NOP;
+
+  if (newVentSpeed == 0) {
+    newActionCode = ActionVentOff.actionCode;
+  }
+  if (newVentSpeed == 1) {
+    if (currentVentSpeed == 0) {
+      newActionCode = ActionVentOn.actionCode;
+    } else {
+      newActionCode = ActionVent1.actionCode;
+    }
+  }
+  if (newVentSpeed == 2) {
+    newActionCode = ActionVent2.actionCode;
+  }
+  if (newVentSpeed == 3) {
+    newActionCode = ActionVent3.actionCode;
+  }
+
+  return newActionCode;
+}
+//==================================================================================================
+byte ventSpeedFromActionCode(const Action* newAction) {
+  byte newVentSpeed = currentVentSpeed;
+
+  if (newAction == &ActionVentOff) {
+    newVentSpeed = 0;
+  }
+  if (newAction == &ActionVent1) {
+    newVentSpeed = 1;
+  }
+  if (newAction == &ActionVent2) {
+    newVentSpeed = 2;
+  }
+  if (newAction == &ActionVent3 || newAction == &ActionVent3Vent1) {
+    newVentSpeed = 3;
+  }
+
+  return newVentSpeed;
 }
 //==================================================================================================
 //==================================================================================================
