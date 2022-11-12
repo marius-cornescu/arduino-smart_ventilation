@@ -197,7 +197,7 @@ byte ventSpeedFromActionCode(const Action* newAction) {
   if (newAction == &ActionVent2) {
     newVentSpeed = 2;
   }
-  if (newAction == &ActionVent3 || newAction == &ActionVent3Vent1) {
+  if (newAction == &ActionVent3 || newAction == &ActionVent3Vent1Short || newAction == &ActionVent3Vent1Long) {
     newVentSpeed = 3;
   }
 

@@ -41,10 +41,13 @@ void __SetupFunctionsForActions() {
   ActionVent1.function = __VentilationSpeed1;
   ActionVent2.function = __VentilationSpeed2;
   ActionVent3.function = __VentilationSpeed3;
-  ActionVent3Vent1.function = __ACTION4;
   //
   ActionVentOff.function = __VentilationOff;
   ActionVentOn.function = __VentilationOn;
+  //
+  ActionVent3Vent1Short.function = __Ventilation3For1Minutes;
+  ActionVent3Vent1Long.function = __Ventilation3For5Minutes;
+  //
 }
 //**************************************************************************************************
 void __SetupRelays() {
@@ -123,9 +126,14 @@ void __VentilationSpeed3() {
   digitalWrite(RELAY_3_PIN, LOW);
 }
 //==================================================================================================
-void __ACTION4() {
+void __Ventilation3For1Minutes() {
   __VentilationSpeed3();
-  clock_Alarm1_SetInMinutesWithAction(ACTION4_DELAY, &ActionVent1);
+  clock_Alarm1_SetInMinutesWithAction(1, &ActionVent1);
+}
+//==================================================================================================
+void __Ventilation3For5Minutes() {
+  __VentilationSpeed3();
+  clock_Alarm1_SetInMinutesWithAction(5, &ActionVent1);
 }
 //==================================================================================================
 void __VentilationOff() {

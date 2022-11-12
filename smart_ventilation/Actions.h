@@ -23,12 +23,12 @@ const byte ACTION_2 = 2;
 const byte ACTION_3 = 3;
 //
 const byte ACTION_4 = 4;
-const byte ACTION4_DELAY = 5; // not used
-//
 const byte ACTION_5 = 5;
-const byte ACTION_6 = 6;
 //
-const byte ACTION_7 = 7; // not used
+const byte ACTION_6 = 6;
+const byte ACTION_7 = 7;
+//
+const byte ACTION_8 = 8; // Not used
 
 //------------------------------------------------
 Action NoAction {
@@ -65,19 +65,11 @@ Action ActionVent3 {
   /*buttons*/     { KitchenHoodRemote.button3, Remote2.button3 }
 };
 //------------------------------------------------
-Action ActionVent3Vent1 {
-  /*name*/        "VSp3->VSp1",
-  /*description*/ "Vent-S3(*5m) -> Vent-S1",
-  /*actionCode*/  ACTION_4,
-  /*function*/    0,
-  /*buttons*/     { Remote1.button2, Remote1.button3, Remote1.button4, ProgRemote1.button1 }
-};
-//------------------------------------------------
 //------------------------------------------------
 Action ActionVentOff {
   /*name*/        "Vent-0ff",
   /*description*/ "Stop Ventilation",
-  /*actionCode*/  ACTION_5,
+  /*actionCode*/  ACTION_4,
   /*function*/    0,
   /*buttons*/     {  }
 };
@@ -85,15 +77,33 @@ Action ActionVentOff {
 Action ActionVentOn {
   /*name*/        "Vent-On",
   /*description*/ "Start Ventilation",
-  /*actionCode*/  ACTION_6,
+  /*actionCode*/  ACTION_5,
   /*function*/    0,
   /*buttons*/     {  }
 };
 //------------------------------------------------
+//------------------------------------------------
+Action ActionVent3Vent1Short {
+  /*name*/        "VS3 1m->VS1",
+  /*description*/ "VentS3(*1m) -> VentS1",
+  /*actionCode*/  ACTION_6,
+  /*function*/    0,
+  /*buttons*/     { Remote1.button2, ProgRemote1.button1 }
+};
+//------------------------------------------------
+Action ActionVent3Vent1Long {
+  /*name*/        "VS3 5m->VS1",
+  /*description*/ "VentS3(*5m) -> VentS1",
+  /*actionCode*/  ACTION_7,
+  /*function*/    0,
+  /*buttons*/     { Remote1.button3, Remote1.button4, ProgRemote1.button2 }
+};
+//------------------------------------------------
+
 
 
 //------------------------------------------------
-const Action *Actions[] = { &ActionVent1, &ActionVent2, &ActionVent3, &ActionVent3Vent1, &ActionVentOff, &ActionVentOn };
+const Action *Actions[] = { &ActionVent1, &ActionVent2, &ActionVent3, &ActionVentOff, &ActionVentOn, &ActionVent3Vent1Short, &ActionVent3Vent1Long };
 //==================================================================================================
 const Action *getActionByActionCode(byte actionCode) {
   for (byte act = 0; act < ARRAY_LEN(Actions); act++) {
