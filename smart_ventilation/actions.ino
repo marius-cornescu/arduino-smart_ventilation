@@ -157,12 +157,18 @@ void actions_onSchedulerStatusChange(bool newValue) {
   }
   isVentilationOnInV1 = newValue;
 
+#ifdef DEBUG
+  char buffer[30];
+  sprintf(buffer, "%s A%02d", isVentilationOnInV1 ? "true" : "false", previousAction->actionCode);
+  display_Print2ndLine(buffer);
+#endif
+
   if (isVentilationOnInV1) {
     if ((previousAction == &ActionVentOff) || (previousAction == &ActionVent1)) {
       actions_ProcessAction(&ActionVentOn);
     }
   } else {
-    if (previousAction == &ActionVent1) {
+    if ((previousAction == &ActionVentOn) || (previousAction == &ActionVent1)) {
       actions_ProcessAction(&ActionVentOff);
     }
   }

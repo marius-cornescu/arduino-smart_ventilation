@@ -99,9 +99,11 @@ void display_Print2ndLine(const Action *action) {
 }
 //==================================================================================================
 void display_Print2ndLine(const Action *action, const char* label) {
+#ifdef UseDisplay
   char buffer[30];
   sprintf(buffer, "A%02d:%11s", action->actionCode, label);
   display_Print2ndLine(buffer);
+#endif
 }
 //==================================================================================================
 void display_Print2ndLine(const char* label) {
