@@ -92,7 +92,7 @@ void loop() {
 //==================================================================================================
 void __printSwVersion() {
   char boot_message[16];
-  sprintf(boot_message, "<BOOT v%8s>", SW_VERSION);
+  sprintf(boot_message, "BOOT v%10s", SW_VERSION);
   display_Print2ndLine(boot_message);
 }
 //==================================================================================================

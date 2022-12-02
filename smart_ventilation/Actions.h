@@ -88,7 +88,7 @@ Action ActionVent3Vent1Short {
   /*description*/ "VentS3(*1m) -> VentS1",
   /*actionCode*/  ACTION_6,
   /*function*/    0,
-  /*buttons*/     { Remote1.button2, ProgRemote1.button1 }
+  /*buttons*/     { Remote1.button2, ProgRemote1.button4 }
 };
 //------------------------------------------------
 Action ActionVent3Vent1Long {
@@ -96,7 +96,7 @@ Action ActionVent3Vent1Long {
   /*description*/ "VentS3(*5m) -> VentS1",
   /*actionCode*/  ACTION_7,
   /*function*/    0,
-  /*buttons*/     { Remote1.button3, Remote1.button4, ProgRemote1.button2 }
+  /*buttons*/     { Remote1.button3, Remote1.button4 }
 };
 //------------------------------------------------
 
