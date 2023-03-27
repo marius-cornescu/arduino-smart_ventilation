@@ -29,6 +29,7 @@
 #include "Actions.h"
 
 //= CONSTANTS ======================================================================================
+const char host_name[] = HOST_NAME;
 const char auth[] = BLYNK_AUTH_TOKEN;
 // WiFi credentials (password to "" for open networks)
 const char ssid[] = WIFI_SSID;
@@ -118,6 +119,8 @@ void setup() {
   Serial.println("VentMaster:Setup >>>");
 #endif
   //..............................
+  WiFi.hostname(host_name);
+  //
   Blynk.begin(auth, ssid, pass);
   // Setup a function to be called X seconds
   timer.setInterval(1 * SEC, timerEvent);
