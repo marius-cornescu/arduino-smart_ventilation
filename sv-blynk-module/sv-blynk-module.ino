@@ -19,11 +19,16 @@
 
 #define SEC 1000  // 1 second
 
+#ifdef DEBUG
+#define TIME_TICK 100
+#else
+#define TIME_TICK 10
+#endif
+
 //= INCLUDES =======================================================================================
 #include "Secrets.h"
 #include <ESP8266WiFi.h>
 //#include <BlynkSimpleEsp8266.h> // non-SSL
-#include <PubSubClient.h>
 #include <BlynkSimpleEsp8266_SSL.h>
 
 #include "Artizan-CommProtocol.h"
@@ -36,9 +41,6 @@ const char auth[] = BLYNK_AUTH_TOKEN;
 const char ssid[] = WIFI_SSID;
 const char pass[] = WIFI_PASSWORD;
 //
-// MQTT Broker IP address, example:
-const char* mqtt_server = MQTT_BROKER_ADDRESS;
-//
 const int LED_INDICATOR_PIN = LED_BUILTIN;
 
 bool processReceivedMessage(const char* message);
@@ -48,7 +50,6 @@ const char* prepareMessageToSend();
 BlynkTimer timer;
 //..............................
 WiFiClient espClient;
-PubSubClient mqttClient(espClient);
 //..............................
 
 RtznCommProtocol commProto("ONLINE-WORKER", &processReceivedMessage, &prepareMessageToSend);
@@ -132,10 +133,10 @@ void setup() {
   // Setup a function to be called X seconds
   timer.setInterval(1 * SEC, timerEvent);
   //
-  mqttClient.setServer(mqtt_server, 1883);
+  mqtt_Setup();
   //..............................
 #ifdef DEBUG
-  Serial.println(">>> VentMaster:Setup");
+  Serial.println("VentMaster:Setup <<<");
 #endif
 }
 //**************************************************************************************************
@@ -225,44 +226,5 @@ void mqtt_PublishUpdate() {
   mqtt_PublishInt("home/ventilation/speed", currentVentSpeed);
   mqtt_PublishInt("home/ventilation/actionCode", currentActionCode);
   mqtt_PublishInt("home/ventilation/actionLabel", 0); // currentActionLabel
-}
-//==================================================================================================
-void mqtt_PublishInt(const char* topic, byte value) {
-  // Convert the value to a char array
-  char valueString[4];
-  utoa((unsigned)value, valueString, 10);
-  mqttClient.publish(topic, valueString);
-}
-//==================================================================================================
-void mqtt_MaintainConnection() {
-  if (!mqttClient.connected()) {
-    mqtt_Reconnect();
-  }
-  mqttClient.loop();
-}
-//==================================================================================================
-void mqtt_Reconnect() {
-  // Loop until we're reconnected
-  while (!mqttClient.connected()) {
-#ifdef DEBUG
-    Serial.print("Attempting MQTT connection...");
-#endif
-    // Attempt to connect
-    if (mqttClient.connect(HOST_NAME)) {
-#ifdef DEBUG      
-      Serial.println("connected");
-#endif
-      // Subscribe
-      mqttClient.subscribe("esp32/output");
-    } else {
-#ifdef DEBUG
-      Serial.print("failed, rc=");
-      Serial.print(mqttClient.state());
-      Serial.println(" try again in 5 seconds");
-#endif
-      // Wait 5 seconds before retrying
-      delay(5000);
-    }
-  }
 }
 //==================================================================================================

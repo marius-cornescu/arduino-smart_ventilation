@@ -10,6 +10,14 @@
 #define UseRealTimeClock  // Use the RTC                                // uses 1% of memory
 #define UseIoT            // Use the IoT module                         // uses ??% of memory
 
+#define SEC 1000  // 1 second
+
+#ifdef DEBUG
+#define TIME_TICK 100
+#else
+#define TIME_TICK 10
+#endif
+
 //= INCLUDES =======================================================================================
 #if defined(DEBUG) || defined(RfLogsToSerial) || defined(I2CLogsToSerial)
 #include <stdio.h>  // for function sprintf
@@ -25,11 +33,6 @@
 //= CONSTANTS ======================================================================================
 const byte LED_INDICATOR_PIN = LED_BUILTIN;  // choose the pin for the LED // D13
 //------------------------------------------------
-#ifdef DEBUG
-const byte TIME_TICK = 100;
-#else
-const byte TIME_TICK = 10;
-#endif
 //= VARIABLES ======================================================================================
 
 //==================================================================================================
