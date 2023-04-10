@@ -15,17 +15,8 @@
 //#define BLYNK_PRINT Serial
 //#define DEBUG
 
-#define ARRAY_LEN(array) (sizeof(array) / sizeof(array[0]))
-
-#define SEC 1000  // 1 second
-
-#ifdef DEBUG
-#define TIME_TICK 100
-#else
-#define TIME_TICK 10
-#endif
-
 //= INCLUDES =======================================================================================
+#include "Common.h"
 #include "Secrets.h"
 #include <ESP8266WiFi.h>
 //#include <BlynkSimpleEsp8266.h> // non-SSL
