@@ -37,10 +37,7 @@ bool rf433_ActIfActivity() {
     if (__isRemoteCodeValid_FastCheck(buttonId, rfRx.getReceivedProtocol(), rfRx.getReceivedBitlength(), rfRx.getReceivedDelay(), rfRx.getReceivedRawdata())) {
 
       const Action* currentAction = actions_ComputeActionForButton(buttonId);
-      if (actions_ShouldProcessAction(currentAction)) {
-        actions_ProcessAction(currentAction);
-        display_ShowProgress();
-      }
+      actions_OnAction(currentAction);
     }
 
     rfRx.resetAvailable();

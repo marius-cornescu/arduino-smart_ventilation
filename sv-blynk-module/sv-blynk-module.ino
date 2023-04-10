@@ -64,7 +64,7 @@ BLYNK_WRITE(V0) {                           // values [0..3]
     currentActionCode = actionCodeFromVentSpeed(newVentSpeed);
     currentVentSpeed = newVentSpeed;
 
-    commProto.actOnPollMessage();
+    comm_ActOnNewDataToSend();
 
     // Clear the ActionCode
     currentActionCode = 0;
@@ -76,9 +76,9 @@ BLYNK_WRITE(V1) {                           // values [1..90]
   int newActionCode = (byte)param.asInt();  // assigning incoming value from pin V1 to a variable
 
   if (newActionCode != currentActionCode) {
-    currentActionCode = currentAction->actionCode;
+    currentActionCode = newActionCode;
 
-    commProto.actOnPollMessage();
+    comm_ActOnNewDataToSend();
 
     // Clear the ActionCode
     currentActionCode = 0;
@@ -131,16 +131,6 @@ void loop() {
 }
 //OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 //==================================================================================================
-//==================================================================================================
-const char* prepareMessageToSend() {
-  char* message = new char[4];
-  memset(message, 0, 4);
-  message[0] = currentVentSpeed + (byte)'0';
-  message[1] = currentActionCode + (byte)'0';
-
-  return message;
-}
-//==================================================================================================
 byte actionCodeFromVentSpeed(byte newVentSpeed) {
   byte newActionCode = ACTION_NOP;
 
@@ -167,6 +157,6 @@ byte actionCodeFromVentSpeed(byte newVentSpeed) {
 void mqtt_PublishUpdate() {
   mqtt_PublishInt("home/ventilation/unit-A/speed", currentVentSpeed);
   mqtt_PublishInt("home/ventilation/unit-A/actionCode", currentActionCode);
-  mqtt_PublishInt("home/ventilation/unit-A/actionLabel", 0); // currentActionLabel
+  mqtt_PublishString("home/ventilation/unit-A/actionLabel", currentActionLabel); // currentActionLabel
 }
 //==================================================================================================

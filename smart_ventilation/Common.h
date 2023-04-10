@@ -15,11 +15,5 @@
 #endif
 
 //------------------------------------------------
-// 2 bytes for 0 to 99 number + 1 for termination
-const byte ACTION_PAYLOAD_SIZE = 2 + 1;
-// 25 bytes for Action Label + 1 for termination
-const byte LABEL_PAYLOAD_SIZE = 25 + 1;
-
-//------------------------------------------------
 //==================================================================================================
 #endif // _HEADERFILE_COMMON

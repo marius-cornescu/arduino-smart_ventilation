@@ -79,3 +79,7 @@ void mqtt_PublishFloat(const char* topic, float value) {
   mqttClient.publish(topic, valueString);
 }
 //==================================================================================================
+void mqtt_PublishString(const char* topic, const char* value) {
+  mqttClient.publish(topic, value);
+}
+//==================================================================================================
