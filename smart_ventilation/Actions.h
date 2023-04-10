@@ -3,19 +3,8 @@
 
 //= CONSTANTS ======================================================================================
 //------------------------------------------------
-typedef void (*ActionFunction) ();
-//------------------------------------------------
-struct Action {
-  const char *name;
-  const char *description;
-  const byte actionCode;
-  ActionFunction function;
-  const unsigned long buttons[4];
-};
-//------------------------------------------------
-
 const byte ACTION_MAX_VALID = 90; // any action with higher value will be ignored
-//
+//------------------------------------------------
 const byte ACTION_NOP = 0;
 //
 const byte ACTION_1 = 1;
@@ -30,6 +19,19 @@ const byte ACTION_7 = 7;
 //
 const byte ACTION_8 = 8; // Not used
 
+//==================================================================================================
+//------------------------------------------------
+typedef void (*ActionFunction) ();
+//------------------------------------------------
+struct Action {
+  const char *name;
+  const char *description;
+  const byte actionCode;
+  ActionFunction function;
+  const unsigned long buttons[4];
+};
+
+//= VARIABLES ======================================================================================
 //------------------------------------------------
 Action NoAction {
   /*name*/        "NOP",

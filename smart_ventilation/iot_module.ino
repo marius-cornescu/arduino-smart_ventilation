@@ -2,15 +2,12 @@
 
 //= INCLUDES =======================================================================================
 #include "Common.h"
-#include "Artizan-CommProtocol.h"
+#include "SerialTransfer.h"
 
 //= CONSTANTS ======================================================================================
-//----------------------------------
-bool processReceivedMessage(const char* message);
-const char* prepareMessageToSend();
 
 //= VARIABLES ======================================================================================
-RtznCommProtocol commProto("OFFLINE-WORKER", &processReceivedMessage, &prepareMessageToSend);
+SerialTransfer commProto;
 
 byte currentVentSpeed = 0;
 byte currentActionCode = ACTION_NOP;
@@ -26,6 +23,7 @@ void iot_Setup() {
   // Open serial communications and wait for port to open
   Serial.begin(115200);
   while (!Serial) { ; }
+  commProto.begin(Serial);
   //..............................
 #ifdef DEBUG
   Serial.println(">>> IOT:Setup");
@@ -81,13 +79,9 @@ bool processReceivedMessage(const char* message) {
   return haveToPublish;
 }
 //==================================================================================================
-const char* prepareMessageToSend() {
-  char* message = new char[4];
-  memset(message, 0, 4);
-  message[0] = currentVentSpeed + (byte)'0';
-  message[1] = currentActionCode + (byte)'0';
-
-  return message;
+void prepareMessageToSend(char* payload) {
+  payload[0] = currentVentSpeed + (byte)'0';
+  payload[1] = currentActionCode + (byte)'0';
 }
 //==================================================================================================
 #endif

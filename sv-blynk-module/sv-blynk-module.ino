@@ -17,6 +17,8 @@
 
 //= INCLUDES =======================================================================================
 #include "Common.h"
+#include "CommCommon.h"
+
 #include "Secrets.h"
 #include <ESP8266WiFi.h>
 //#include <BlynkSimpleEsp8266.h> // non-SSL
@@ -34,21 +36,15 @@ const char pass[] = WIFI_PASSWORD;
 //
 const int LED_INDICATOR_PIN = LED_BUILTIN;
 
-bool processReceivedMessage(const char* message);
-const char* prepareMessageToSend();
-
 //= VARIABLES ======================================================================================
 BlynkTimer timer;
 //..............................
 WiFiClient espClient;
 //..............................
 
-RtznCommProtocol commProto("ONLINE-WORKER", &processReceivedMessage, &prepareMessageToSend);
-
 byte currentVentSpeed = 0;
 byte currentActionCode = ACTION_NOP;
-
-const char* currentActionLabel = (&NoAction)->description;
+char currentActionLabel[LABEL_PAYLOAD_SIZE + 1];
 
 //##################################################################################################
 // function will run every time Blynk connection is established
@@ -80,10 +76,7 @@ BLYNK_WRITE(V1) {                           // values [1..90]
   int newActionCode = (byte)param.asInt();  // assigning incoming value from pin V1 to a variable
 
   if (newActionCode != currentActionCode) {
-    const Action* currentAction = getActionByActionCode(newActionCode);
-
     currentActionCode = currentAction->actionCode;
-    currentActionLabel = currentAction->description;
 
     commProto.actOnPollMessage();
 
@@ -94,16 +87,13 @@ BLYNK_WRITE(V1) {                           // values [1..90]
 }
 //##################################################################################################
 void timerEvent() {
-  // You can send any value at any time. Don't send more that 10 values per second.
-  if (commProto.hasMessageInInboxThenReadMessage()) {
-    commProto.actOnMessage();
-  }
-  //
-  if (commProto.isHaveToPublish()) {
+  if (comm_ActIfReceivedMessage()) {
+
     Blynk.virtualWrite(V0, currentVentSpeed);
     Blynk.virtualWrite(V1, currentActionCode);
     Blynk.virtualWrite(V2, currentActionLabel);
-    commProto.setHaveToPublish(false);
+
+    mqtt_PublishUpdate();
   }
 }
 //##################################################################################################
@@ -124,6 +114,8 @@ void setup() {
   // Setup a function to be called X seconds
   timer.setInterval(1 * SEC, timerEvent);
   //
+  comm_Setup();
+  //
   mqtt_Setup();
   //..............................
 #ifdef DEBUG
@@ -139,34 +131,12 @@ void loop() {
 }
 //OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 //==================================================================================================
-bool processReceivedMessage(const char* message) {
-  bool haveToPublish = false;
-  //------------------------------------
-  byte newVentSpeed = message[0] - (byte)'0';
-  // ignore - the meat is in the action
-  //------------------------------------
-  byte newActionCode = message[1] - (byte)'0';
-  if (ACTION_NOP != newActionCode) {
-    const Action* newAction = getActionByActionCode(newActionCode);
-
-    currentVentSpeed = ventSpeedFromActionCode(newAction);
-    currentActionLabel = newAction->description;
-
-    haveToPublish = true;
-
-    mqtt_PublishUpdate();
-  }
-  //------------------------------------
-  return haveToPublish;
-}
 //==================================================================================================
 const char* prepareMessageToSend() {
   char* message = new char[4];
   memset(message, 0, 4);
   message[0] = currentVentSpeed + (byte)'0';
   message[1] = currentActionCode + (byte)'0';
-
-  mqtt_PublishUpdate();
 
   return message;
 }
@@ -175,47 +145,28 @@ byte actionCodeFromVentSpeed(byte newVentSpeed) {
   byte newActionCode = ACTION_NOP;
 
   if (newVentSpeed == 0) {
-    newActionCode = ActionVentOff.actionCode;
+    newActionCode = ACTION_4;
   }
   if (newVentSpeed == 1) {
     if (currentVentSpeed == 0) {
-      newActionCode = ActionVentOn.actionCode;
+      newActionCode = ACTION_5;
     } else {
-      newActionCode = ActionVent1.actionCode;
+      newActionCode = ACTION_1;
     }
   }
   if (newVentSpeed == 2) {
-    newActionCode = ActionVent2.actionCode;
+    newActionCode = ACTION_2;
   }
   if (newVentSpeed == 3) {
-    newActionCode = ActionVent3.actionCode;
+    newActionCode = ACTION_3;
   }
 
   return newActionCode;
 }
 //==================================================================================================
-byte ventSpeedFromActionCode(const Action* newAction) {
-  byte newVentSpeed = currentVentSpeed;
-
-  if (newAction == &ActionVentOff) {
-    newVentSpeed = 0;
-  }
-  if (newAction == &ActionVent1) {
-    newVentSpeed = 1;
-  }
-  if (newAction == &ActionVent2) {
-    newVentSpeed = 2;
-  }
-  if (newAction == &ActionVent3 || newAction == &ActionVent3Vent1Short || newAction == &ActionVent3Vent1Long) {
-    newVentSpeed = 3;
-  }
-
-  return newVentSpeed;
-}
-//==================================================================================================
 void mqtt_PublishUpdate() {
-  mqtt_PublishInt("home/ventilation/speed", currentVentSpeed);
-  mqtt_PublishInt("home/ventilation/actionCode", currentActionCode);
-  mqtt_PublishInt("home/ventilation/actionLabel", 0); // currentActionLabel
+  mqtt_PublishInt("home/ventilation/unit-A/speed", currentVentSpeed);
+  mqtt_PublishInt("home/ventilation/unit-A/actionCode", currentActionCode);
+  mqtt_PublishInt("home/ventilation/unit-A/actionLabel", 0); // currentActionLabel
 }
 //==================================================================================================
