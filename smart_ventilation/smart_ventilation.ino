@@ -29,7 +29,6 @@ const byte LED_INDICATOR_PIN = LED_BUILTIN;  // choose the pin for the LED // D1
 //= VARIABLES ======================================================================================
 byte currentVentSpeed = 0;
 byte currentActionCode = ACTION_NOP;
-//char currentActionLabel[LABEL_PAYLOAD_SIZE + 1];
 
 //==================================================================================================
 //**************************************************************************************************

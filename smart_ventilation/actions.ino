@@ -88,7 +88,7 @@ void actions_OnAction(const Action *action) {
     actions_ProcessAction(action);
     display_ShowProgress();
   }
-}  
+}
 //==================================================================================================
 bool _ShouldProcessAction(const Action *action) {
   if (action->actionCode > 0 && action->actionCode < ACTION_MAX_VALID && action != previousAction) {
@@ -104,9 +104,6 @@ void actions_ProcessAction(const Action *action) {
   //
   display_Print1stLine(action);
   action->function();
-  //
-  currentActionCode = action->actionCode;
-  //memcpy(currentActionLabel, action->description, ACTION_PAYLOAD_SIZE);
   //
   previousAction = action;
   //

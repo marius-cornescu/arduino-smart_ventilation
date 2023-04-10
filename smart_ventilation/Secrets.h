@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _HEADERFILE_SECRETS
 #define _HEADERFILE_SECRETS
 //==================================================================================================
