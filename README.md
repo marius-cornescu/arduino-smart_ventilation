@@ -1,5 +1,7 @@
 # Smart Ventilation
 
+https://mariuscornescu.com/2022/11/03/arduino-smart-iot-prilex-ventilation-system/
+
 # A. Pin Connections
 
 ## A.1 RF-433 RX
