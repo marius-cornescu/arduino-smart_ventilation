@@ -31,7 +31,7 @@ void actions_Setup() {
   //
 #ifdef DEBUG
   debug_PrintActions();
-  Serial.println(F(">>> ACTIONS:Setup"));
+  Serial.println(F("ACTIONS:Setup <<<"));
 #endif
 }
 //**************************************************************************************************

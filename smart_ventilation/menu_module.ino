@@ -62,7 +62,7 @@ void menu_Setup() {
   //..............................
   delay(TIME_TICK * 10);
 #ifdef DEBUG
-  Serial.println(F(">>> MENU:Setup"));
+  Serial.println(F("MENU:Setup <<<"));
 #endif
 }
 //**************************************************************************************************

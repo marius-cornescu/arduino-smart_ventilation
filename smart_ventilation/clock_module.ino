@@ -27,7 +27,7 @@ void clock_Setup() {
   //..............................
   //..............................
 #ifdef DEBUG
-  Serial.println(F(">>> CLOCK:Setup"));
+  Serial.println(F("CLOCK:Setup <<<"));
 #endif
 #endif
 }

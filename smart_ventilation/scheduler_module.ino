@@ -19,7 +19,7 @@ void scheduler_Setup() {
   pinMode(VENT_STATUS_PIN, INPUT);
   //..............................
 #ifdef DEBUG
-  Serial.println(F(">>> SCHEDULER:Setup"));
+  Serial.println(F("SCHEDULER:Setup <<<"));
 #endif
 }
 //**************************************************************************************************

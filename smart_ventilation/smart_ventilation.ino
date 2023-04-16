@@ -66,7 +66,7 @@ void setup() {
   display_Clear2ndLine();
   //..............................
 #ifdef DEBUG
-  Serial.println(F(">>> START-UP"));
+  Serial.println(F("START-UP <<<"));
 #endif
 }
 //**************************************************************************************************

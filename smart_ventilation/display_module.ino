@@ -48,7 +48,7 @@ void display_Setup() {
   lcd.noBlink();
   //..............................
 #ifdef DEBUG
-  Serial.println(F(">>> DISPLAY:Setup"));
+  Serial.println(F("DISPLAY:Setup <<<"));
 #endif
 #endif
 }
