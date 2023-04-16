@@ -1,4 +1,3 @@
-#pragma once
 #ifndef _HEADERFILE_ACTIONS
 #define _HEADERFILE_ACTIONS
 

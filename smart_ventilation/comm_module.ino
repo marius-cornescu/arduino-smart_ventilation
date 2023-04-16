@@ -17,7 +17,7 @@ SerialTransfer commProto;
 void comm_Setup() {
 #ifdef UseCOMM
 #ifdef DEBUG
-  Serial.println("COMM:Setup >>>");
+  Serial.println(F("COMM:Setup >>>"));
 #endif
   //..............................
   // Open serial communications and wait for port to open
@@ -26,7 +26,7 @@ void comm_Setup() {
   commProto.begin(Serial);
   //..............................
 #ifdef DEBUG
-  Serial.println("COMM:Setup <<<");
+  Serial.println(F("COMM:Setup <<<"));
 #endif
   delay(50 * TIME_TICK);
 #endif
@@ -113,7 +113,7 @@ void _Payload_To_Data() {
 void __printPayloadIfDebug() {
 #ifdef DEBUG
   Serial.println();
-  Serial.print("payload = [");
+  Serial.print(F("payload = ["));
   Serial.print(payload);
   Serial.print("]");
   Serial.println();
@@ -123,10 +123,10 @@ void __printPayloadIfDebug() {
 void __printDataIfDebug() {
 #ifdef DEBUG
   Serial.println();
-  Serial.print("currentActionCode = [");
+  Serial.print(F("currentActionCode = ["));
   Serial.print(currentActionCode);
-  Serial.print("] currentActionLabel = [");
-  Serial.print(currentActionLabel);
+  Serial.print(F("] currentVentSpeed = ["));
+  Serial.print(currentVentSpeed);
   Serial.print("]");
   Serial.println();
 #endif

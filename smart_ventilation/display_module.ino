@@ -1,4 +1,3 @@
-#ifdef UseDisplay
 //= DEFINES ========================================================================================
 #define DISPLAY_STATUS_POS 15
 #define DISPLAY_I2C_ADDRESS 0x27
@@ -11,6 +10,7 @@
 
 //= INCLUDE ========================================================================================
 #include "Common.h"
+#ifdef UseDisplay
 #include <LiquidCrystal_I2C.h>
 
 //= CONSTANTS ======================================================================================
@@ -25,7 +25,7 @@ byte progress = 0;                  // used to indicate progress on display
 void display_Setup() {
 #ifdef UseDisplay
 #ifdef DEBUG
-  Serial.println("DISPLAY:Setup >>>");
+  Serial.println(F("DISPLAY:Setup >>>"));
 #endif
   //..............................
   lcd.init();      // initialise the LCD
@@ -48,7 +48,7 @@ void display_Setup() {
   lcd.noBlink();
   //..............................
 #ifdef DEBUG
-  Serial.println(">>> DISPLAY:Setup");
+  Serial.println(F(">>> DISPLAY:Setup"));
 #endif
 #endif
 }

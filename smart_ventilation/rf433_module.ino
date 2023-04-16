@@ -18,14 +18,14 @@ RCSwitch rfRx = RCSwitch();
 //**************************************************************************************************
 void rf433_Setup() {
 #ifdef DEBUG
-  Serial.println("RF433:Setup >>>");
+  Serial.println(F("RF433:Setup >>>"));
 #endif
   //..............................
   rfRx.enableReceive(RF_INTERRUPT_D2_PIN);
   //..............................
   delay(TIME_TICK * 1);
 #ifdef DEBUG
-  Serial.println(">>> RF433:Setup");
+  Serial.println(F(">>> RF433:Setup"));
 #endif
 }
 //**************************************************************************************************
@@ -57,7 +57,7 @@ bool __isRemoteCodeValid_FastCheck(unsigned long decimal, unsigned int protocol,
     return true;
   } else {
 #ifdef DEBUG
-    Serial.println("???? Unknown RF code / wrong protocol or bit count");
+    Serial.println(F("???? Unknown RF code / wrong protocol or bit count"));
 #endif
     return false;
   }
@@ -73,7 +73,7 @@ void __printRxToSerial(unsigned long decimal, unsigned int length, unsigned int 
           decimal, length, b, __bin2tristate(b), delay, protocol);
   Serial.println(buffer);
 
-  Serial.print("Raw data: ");
+  Serial.print(F("Raw data: "));
   for (unsigned int i = 0; i <= length * 2; i++) {
     Serial.print(raw[i]);
     Serial.print(",");

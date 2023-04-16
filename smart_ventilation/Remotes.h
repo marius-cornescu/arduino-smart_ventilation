@@ -1,4 +1,3 @@
-#pragma once
 #ifndef _HEADERFILE_REMOTES
 #define _HEADERFILE_REMOTES
 

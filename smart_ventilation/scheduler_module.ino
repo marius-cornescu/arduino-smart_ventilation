@@ -13,13 +13,13 @@ static unsigned int lastVentStatusState = HIGH;
 //**************************************************************************************************
 void scheduler_Setup() {
 #ifdef DEBUG
-  Serial.println("SCHEDULER:Setup >>>");
+  Serial.println(F("SCHEDULER:Setup >>>"));
 #endif
   //..............................
   pinMode(VENT_STATUS_PIN, INPUT);
   //..............................
 #ifdef DEBUG
-  Serial.println(">>> SCHEDULER:Setup");
+  Serial.println(F(">>> SCHEDULER:Setup"));
 #endif
 }
 //**************************************************************************************************
