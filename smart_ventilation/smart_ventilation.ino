@@ -1,14 +1,14 @@
 //= DEFINES ========================================================================================
 //------------------------------------------------
 // Various debug options
-//#define DEBUG
+#define DEBUG
 //#define RfLogsToSerial   // Print RF messages to Serial Terminal       // uses 9% of memory
 //#define I2CLogsToSerial  // Print I2C messages to Serial Terminal       // uses ??% of memory
 //------------------------------------------------
 // Various Features
-#define UseDisplay        // Log information and actions to the Display // uses 18% of memory
-#define UseRealTimeClock  // Use the RTC                                // uses 1% of memory
-#define UseCOMM           // Use the IoT module                         // uses ??% of memory
+//#define UseDisplay        // Log information and actions to the Display // uses 18% of memory
+//#define UseRealTimeClock  // Use the RTC                                // uses 1% of memory
+//#define UseCOMM           // Use the IoT module                         // uses ??% of memory
 
 //= INCLUDES =======================================================================================
 #if defined(DEBUG) || defined(RfLogsToSerial) || defined(I2CLogsToSerial)
