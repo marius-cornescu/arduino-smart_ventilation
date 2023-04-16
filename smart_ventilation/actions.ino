@@ -84,7 +84,7 @@ const Action *actions_ComputeActionForCode(byte actionCode) {
 }
 //==================================================================================================
 bool actions_ShouldProcessAction(const Action *action) {
-  if(action->actionCode > 0 && action->actionCode < ACTION_MAX_VALID && action != previousAction) {
+  if (action->actionCode > 0 && action->actionCode < ACTION_MAX_VALID && action != previousAction) {
     return true;
   }
   return false;
