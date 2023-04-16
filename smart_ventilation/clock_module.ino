@@ -22,12 +22,12 @@ struct Action *a2_ScheduledAction = &NoAction;
 void clock_Setup() {
 #ifdef UseRealTimeClock
 #ifdef DEBUG
-  Serial.println("CLOCK:Setup >>>");
+  Serial.println(F("CLOCK:Setup >>>"));
 #endif
   //..............................
   //..............................
 #ifdef DEBUG
-  Serial.println(">>> CLOCK:Setup");
+  Serial.println(F("CLOCK:Setup <<<"));
 #endif
 #endif
 }
@@ -63,8 +63,10 @@ void clock_Alarm2_SetInMinutesWithAction(byte extraMinutes, struct Action *sched
 }
 //==================================================================================================
 void clock_TriggerIfAlarm() {
+#ifdef UseRealTimeClock
   __Alarm1_TriggerIfAlarm();
   __Alarm2_TriggerIfAlarm();
+#endif
 }
 //==================================================================================================
 #ifdef UseRealTimeClock
@@ -76,7 +78,7 @@ void __Alarm1_TriggerIfAlarm() {
     a1_ScheduledAction = &NoAction;
     //
 #ifdef DEBUG
-    Serial.println("Alarm 1 triggered");
+    Serial.println(F("Alarm 1 triggered"));
 #endif
     //
     display_Clear2ndLine();
@@ -90,7 +92,7 @@ void __Alarm2_TriggerIfAlarm() {
     a2_ScheduledAction = &NoAction;
     //
 #ifdef DEBUG
-    Serial.println("Alarm 2 triggered");
+    Serial.println(F("Alarm 2 triggered"));
 #endif
     //
     display_Clear2ndLine();
@@ -110,7 +112,8 @@ void __GetTimeStamp(char *timestamp) {
   sprintf(timestamp, "%02d/%02d/%02d %02d:%02d:%02d", now.day(), now.month(), now.year(), now.hour(), now.minute(), now.second());
 
 #ifdef DEBUG
-  Serial.print("Date/Time: "); Serial.println(timestamp);
+  Serial.print(F("Date/Time: "));
+  Serial.println(timestamp);
 #endif
 #endif
 }

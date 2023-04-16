@@ -21,7 +21,7 @@ static bool isVentilationOnInV1 = true;
 //**************************************************************************************************
 void actions_Setup() {
 #ifdef DEBUG
-  Serial.println("ACTIONS:Setup >>>");
+  Serial.println(F("ACTIONS:Setup >>>"));
 #endif
   __SetupRelays();
   //
@@ -31,7 +31,7 @@ void actions_Setup() {
   //
 #ifdef DEBUG
   debug_PrintActions();
-  Serial.println(">>> ACTIONS:Setup");
+  Serial.println(F("ACTIONS:Setup <<<"));
 #endif
 }
 //**************************************************************************************************
@@ -181,11 +181,11 @@ void debug_PrintActions() {
   sprintf(buffer, "|%d|%d|%d|%d|",
           Remote1.button1, Remote1.button2, Remote1.button3, Remote1.button4);
   Serial.println(buffer);
-  Serial.println("--------------------------");
+  Serial.println(F("--------------------------"));
   for (byte i = 0; i < ARRAY_LEN(Actions); i = i + 1) {
     __PrintAction(Actions[i]);
   }
-  Serial.println("--------------------------");
+  Serial.println(F("--------------------------"));
 }
 
 void __PrintAction(const Action *action) {
@@ -200,7 +200,7 @@ void __PrintAction(const Action *action) {
     }
     Serial.print(action->buttons[i]);
   }
-  Serial.println(" ]}");
+  Serial.println(F(" ]}"));
 }
 #endif
 //==================================================================================================
