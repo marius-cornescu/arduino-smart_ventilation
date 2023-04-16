@@ -6,15 +6,11 @@
 //#define I2CLogsToSerial  // Print I2C messages to Serial Terminal       // uses ??% of memory
 //------------------------------------------------
 // Various Features
-//#define UseDisplay        // Log information and actions to the Display // uses 18% of memory
-//#define UseRealTimeClock  // Use the RTC                                // uses 1% of memory
-//#define UseCOMM           // Use the IoT module                         // uses ??% of memory
+#define UseDisplay        // Log information and actions to the Display // uses 18% of memory
+#define UseRealTimeClock  // Use the RTC                                // uses 1% of memory
+#define UseCOMM           // Use the IoT module                         // uses 33% of memory
 
 //= INCLUDES =======================================================================================
-#if defined(DEBUG) || defined(RfLogsToSerial) || defined(I2CLogsToSerial)
-#include <stdio.h>  // for function sprintf
-#endif
-
 #include "Common.h"
 #include "CommCommon.h"
 #include "Remotes.h"
@@ -36,6 +32,7 @@ void setup() {
 #ifdef DEBUG
   // Open serial communications and wait for port to open:
   Serial.begin(115200);
+  //while (!Serial) { ; }
   Serial.println(F("START-UP >>>"));
 #endif
   //..............................

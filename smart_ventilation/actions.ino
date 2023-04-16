@@ -192,8 +192,9 @@ void actions_onSchedulerStatusChange(bool newValue) {
 //==================================================================================================
 #ifdef DEBUG
 void debug_PrintActions() {
-  char buffer[200];
-  sprintf(buffer, "|%d|%d|%d|%d|",
+  char buffer[100];
+  // |6145640|6145636|6145634|6145633|
+  sprintf(buffer, "|%ld|%ld|%ld|%ld|",
           Remote1.button1, Remote1.button2, Remote1.button3, Remote1.button4);
   Serial.println(buffer);
   Serial.println(F("--------------------------"));
@@ -204,7 +205,7 @@ void debug_PrintActions() {
 }
 
 void __PrintAction(const Action *action) {
-  char buffer[200];
+  char buffer[100];
   sprintf(buffer, "Action {name=\"%s\", actionCode=%d, buttons=[ ",
           action->name, action->actionCode);
   Serial.print(buffer);

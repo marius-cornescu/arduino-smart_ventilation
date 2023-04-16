@@ -2,8 +2,8 @@
 #define DISPLAY_STATUS_POS 15
 #define DISPLAY_I2C_ADDRESS 0x27
 
-#define BLANK_LINE "                                        "
-#define TEST_LINE  "***************#123456789012345678901234"
+#define BLANK_LINE F("                                        ")
+#define TEST_LINE  F("***************#123456789012345678901234")
 
 #define LINE1 0
 #define LINE2 1

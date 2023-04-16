@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _HEADERFILE_COMM_COMMON
 #define _HEADERFILE_COMM_COMMON
 //= CONSTANTS ======================================================================================

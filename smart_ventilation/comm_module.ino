@@ -4,12 +4,11 @@
 
 //= INCLUDES =======================================================================================
 #include "CommCommon.h"
-#ifdef UseCOMM
 #include "SerialTransfer.h"
 
 //= CONSTANTS ======================================================================================
 
-
+#ifdef UseCOMM
 //= VARIABLES ======================================================================================
 SerialTransfer commProto;
 
@@ -22,15 +21,14 @@ void comm_Setup() {
   Serial.println(F("COMM:Setup >>>"));
 #endif
   //..............................
-  // Open serial communications and wait for port to open
+  // Open serial communications
   Serial.begin(115200);
-  while (!Serial) { ; }
   commProto.begin(Serial);
   //..............................
+  delay(1 * TIME_TICK);
 #ifdef DEBUG
   Serial.println(F("COMM:Setup <<<"));
 #endif
-  delay(50 * TIME_TICK);
 #endif
 }
 //**************************************************************************************************
