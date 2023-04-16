@@ -83,14 +83,7 @@ const Action *actions_ComputeActionForCode(byte actionCode) {
   return getActionByActionCode(actionCode);
 }
 //==================================================================================================
-void actions_OnAction(const Action *action) {
-  if (_ShouldProcessAction(action)) {
-    actions_ProcessAction(action);
-    display_ShowProgress();
-  }
-}
-//==================================================================================================
-bool _ShouldProcessAction(const Action *action) {
+bool actions_ShouldProcessAction(const Action *action) {
   if (action->actionCode > 0 && action->actionCode < ACTION_MAX_VALID && action != previousAction) {
     return true;
   }
@@ -105,9 +98,9 @@ void actions_ProcessAction(const Action *action) {
   display_Print1stLine(action);
   action->function();
   //
-  previousAction = action;
+  iot_actOnNewAction(action);
   //
-  comm_ActOnNewDataToSend();
+  previousAction = action;
 }
 //==================================================================================================
 //==================================================================================================
@@ -119,24 +112,18 @@ void __VentilationSpeed1() {
   digitalWrite(RELAY_1_PIN, isVentilationOnInV1 ? HIGH : LOW);
   digitalWrite(RELAY_2_PIN, HIGH);
   digitalWrite(RELAY_3_PIN, HIGH);
-
-  currentVentSpeed = 1;
 }
 //==================================================================================================
 void __VentilationSpeed2() {
   digitalWrite(RELAY_1_PIN, HIGH);
   digitalWrite(RELAY_2_PIN, LOW);
   digitalWrite(RELAY_3_PIN, HIGH);
-
-  currentVentSpeed = 2;
 }
 //==================================================================================================
 void __VentilationSpeed3() {
   digitalWrite(RELAY_1_PIN, HIGH);
   digitalWrite(RELAY_2_PIN, HIGH);
   digitalWrite(RELAY_3_PIN, LOW);
-
-  currentVentSpeed = 3;
 }
 //==================================================================================================
 void __Ventilation3For1Minutes() {
@@ -153,8 +140,6 @@ void __VentilationOff() {
   digitalWrite(RELAY_1_PIN, LOW);  // V1 is reversed, so LOW is OFF
   digitalWrite(RELAY_2_PIN, HIGH);
   digitalWrite(RELAY_3_PIN, HIGH);
-
-  currentVentSpeed = 0;
 }
 //==================================================================================================
 void __VentilationOn() {  // FLIP from 2 to 1, to go into low speed mode

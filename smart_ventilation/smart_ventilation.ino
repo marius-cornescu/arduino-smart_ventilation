@@ -8,7 +8,7 @@
 // Various Features
 #define UseDisplay        // Log information and actions to the Display // uses 18% of memory
 #define UseRealTimeClock  // Use the RTC                                // uses 1% of memory
-#define UseCOMM           // Use the IoT module                         // uses ??% of memory
+#define UseIoT            // Use the IoT module                         // uses ??% of memory
 
 //= INCLUDES =======================================================================================
 #if defined(DEBUG) || defined(RfLogsToSerial) || defined(I2CLogsToSerial)
@@ -16,7 +16,6 @@
 #endif
 
 #include "Common.h"
-#include "CommCommon.h"
 #include "Remotes.h"
 #include "Actions.h"
 
@@ -27,8 +26,6 @@
 const byte LED_INDICATOR_PIN = LED_BUILTIN;  // choose the pin for the LED // D13
 //------------------------------------------------
 //= VARIABLES ======================================================================================
-byte currentVentSpeed = 0;
-byte currentActionCode = ACTION_NOP;
 
 //==================================================================================================
 //**************************************************************************************************
@@ -58,7 +55,7 @@ void setup() {
   //
   rf433_Setup();
   //
-  comm_Setup();
+  iot_Setup();
   //
   delay(TIME_TICK * 50);
   //
@@ -81,17 +78,10 @@ void loop() {
     //
     clock_TriggerIfAlarm();
     //
-    _ActIfReceivedAction();
+    iot_ActIfActivity();
     //
     menu_ActIfActivity();
     delay(TIME_TICK * 10);
-  }
-}
-//==================================================================================================
-void _ActIfReceivedAction() {
-  if (comm_ActIfReceivedMessage()) {
-    const Action* currentAction = actions_ComputeActionForCode(currentActionCode);
-    actions_OnAction(currentAction);
   }
 }
 //==================================================================================================
