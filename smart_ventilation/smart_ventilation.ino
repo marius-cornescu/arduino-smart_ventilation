@@ -8,7 +8,7 @@
 // Various Features
 #define UseDisplay        // Log information and actions to the Display // uses 18% of memory
 #define UseRealTimeClock  // Use the RTC                                // uses 1% of memory
-#define UseIoT            // Use the IoT module                         // uses ??% of memory
+#define UseCOMMPro            // Use the IoT module                         // uses ??% of memory
 #define COMM_ROLE "OFFLINE-WORKER"
 
 //= INCLUDES =======================================================================================
@@ -56,7 +56,7 @@ void setup() {
   //
   rf433_Setup();
   //
-  iot_Setup();
+  comm_Setup();
   //
   delay(TIME_TICK * 50);
   //
@@ -79,7 +79,7 @@ void loop() {
     //
     clock_TriggerIfAlarm();
     //
-    iot_ActIfActivity();
+    comm_ActIfReceivedMessage();
     //
     menu_ActIfActivity();
     delay(TIME_TICK * 10);

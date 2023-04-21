@@ -1,4 +1,5 @@
 //= DEFINES ========================================================================================
+#ifdef UseCOMMPro
 
 //= INCLUDES =======================================================================================
 #include "Common.h"
@@ -16,50 +17,52 @@ RtznCommProtocol commProto(COMM_ROLE, PAYLOAD_SIZE, &processReceivedMessage, &pr
 byte currentVentSpeed = 0;
 byte currentActionCode = ACTION_NOP;
 
+#endif
 //==================================================================================================
 //**************************************************************************************************
-void iot_Setup() {
-#ifdef UseIoT
+void comm_Setup() {
+#ifdef UseCOMMPro
 #ifdef DEBUG
-  Serial.println("IOT:Setup >>>");
+  Serial.println(F("COMM:Setup >>>"));
 #endif
   //..............................
   // Open serial communications and wait for port to open
   Serial.begin(115200);
   while (!Serial) { ; }
   //..............................
+  delay(1 * TIME_TICK);
 #ifdef DEBUG
-  Serial.println(">>> IOT:Setup");
+  Serial.println(F("COMM:Setup <<<"));
 #endif
 #endif
 }
 //**************************************************************************************************
 //==================================================================================================
-void iot_ActIfActivity() {
-#ifdef UseIoT
-  if (commProto.hasMessageInInboxThenAct() && commProto.isHaveToPublish()) {
-    __actOnPartnerDataChanged();
-  }
-#endif
-}
-//==================================================================================================
-void iot_actOnNewAction(const Action* action) {
-#ifdef UseIoT
+void comm_ActOnNewDataToSend(const Action* action) {
+#ifdef UseCOMMPro
   currentActionCode = action->actionCode;
 
   commProto.actOnPollMessage();
 #endif
 }
 //==================================================================================================
-#ifdef UseIoT
 //==================================================================================================
-void __actOnPartnerDataChanged() {
-  const Action* currentAction = actions_ComputeActionForCode(currentActionCode);
-  if (actions_ShouldProcessAction(currentAction)) {
-    actions_ProcessAction(currentAction);
-    display_ShowProgress();
+bool comm_ActIfReceivedMessage() {
+#ifdef UseCOMMPro
+  if (commProto.hasMessageInInboxThenAct() && commProto.isHaveToPublish()) {
+    const Action* currentAction = actions_ComputeActionForCode(currentActionCode);
+    if (actions_ShouldProcessAction(currentAction)) {
+      actions_ProcessAction(currentAction);
+      display_ShowProgress();
+      //
+      return true;
+    }
   }
+#endif
+  return false;
 }
+//==================================================================================================
+#ifdef UseCOMMPro
 //==================================================================================================
 //==================================================================================================
 bool processReceivedMessage(const char* message) {
@@ -69,11 +72,9 @@ bool processReceivedMessage(const char* message) {
   // ignore - the meat is in the action
   //------------------------------------
   byte newActionCode = message[1] - (byte)'0';
-  if (currentActionCode != newActionCode) {
-    if (newActionCode > ACTION_NOP) {
-      currentActionCode = newActionCode;
-      haveToPublish = true;
-    }
+  if (newActionCode != ACTION_NOP && currentActionCode != newActionCode) {
+    currentActionCode = newActionCode;
+    haveToPublish = true;
   }
   //------------------------------------
   return haveToPublish;

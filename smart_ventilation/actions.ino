@@ -98,7 +98,7 @@ void actions_ProcessAction(const Action *action) {
   display_Print1stLine(action);
   action->function();
   //
-  iot_actOnNewAction(action);
+  comm_ActOnNewDataToSend(action);
   //
   previousAction = action;
 }

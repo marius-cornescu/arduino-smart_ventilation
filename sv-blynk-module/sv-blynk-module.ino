@@ -21,6 +21,9 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //#define BLYNK_PRINT Serial
 //#define DEBUG
+//------------------------------------------------
+// Various Features
+#define UseCOMMPro            // Use the IoT module                         // uses ??% of memory
 
 //= INCLUDES =======================================================================================
 #include "Common.h"
@@ -42,15 +45,10 @@ const char pass[] = WIFI_PASSWORD;
 //
 const int LED_INDICATOR_PIN = LED_BUILTIN;
 
-bool processReceivedMessage(const char* message);
-void prepareMessageToSend(char* message);
-
 //= VARIABLES ======================================================================================
 BlynkTimer timer;
 //..............................
 WiFiClient espClient;
-//..............................
-RtznCommProtocol commProto(COMM_ROLE, PAYLOAD_SIZE, &processReceivedMessage, &prepareMessageToSend);
 
 byte currentVentSpeed = 0;
 byte currentActionCode = ACTION_NOP;
@@ -72,10 +70,12 @@ BLYNK_WRITE(V0) {                           // values [0..3]
   byte newVentSpeed = (byte)param.asInt();  // assigning incoming value from pin V0 to a variable
 
   if (newVentSpeed != currentVentSpeed) {
-    currentActionCode = actionCodeFromVentSpeed(newVentSpeed);
     currentVentSpeed = newVentSpeed;
+    currentActionCode = actionCodeFromVentSpeed(newVentSpeed);
 
-    commProto.actOnPollMessage();
+    comm_ActOnNewDataToSend();
+
+    mqtt_PublishUpdate();
 
     // Clear the ActionCode
     currentActionCode = 0;
@@ -92,7 +92,9 @@ BLYNK_WRITE(V1) {                           // values [1..90]
     currentActionCode = currentAction->actionCode;
     currentActionLabel = currentAction->description;
 
-    commProto.actOnPollMessage();
+    comm_ActOnNewDataToSend();
+
+    mqtt_PublishUpdate();
 
     // Clear the ActionCode
     currentActionCode = 0;
@@ -102,11 +104,12 @@ BLYNK_WRITE(V1) {                           // values [1..90]
 //##################################################################################################
 void timerEvent() {
   // You can send any value at any time. Don't send more that 10 values per second.
-  if (commProto.hasMessageInInboxThenAct() && commProto.isHaveToPublish()) {
+  if (comm_ActIfReceivedMessage()) {
     Blynk.virtualWrite(V0, currentVentSpeed);
     Blynk.virtualWrite(V1, currentActionCode);
     Blynk.virtualWrite(V2, currentActionLabel);
-    commProto.setHaveToPublish(false);
+
+    mqtt_PublishUpdate();
   }
 }
 //##################################################################################################
@@ -127,6 +130,8 @@ void setup() {
   // Setup a function to be called X seconds
   timer.setInterval(1 * SEC, timerEvent);
   //
+  comm_Setup();
+  //
   mqtt_Setup();
   //..............................
 #ifdef DEBUG
@@ -141,34 +146,6 @@ void loop() {
   mqtt_MaintainConnection();
 }
 //OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
-//==================================================================================================
-bool processReceivedMessage(const char* message) {
-  bool haveToPublish = false;
-  //------------------------------------
-  byte newVentSpeed = message[0] - (byte)'0';
-  // ignore - the meat is in the action
-  //------------------------------------
-  byte newActionCode = message[1] - (byte)'0';
-  if (ACTION_NOP != newActionCode) {
-    const Action* newAction = getActionByActionCode(newActionCode);
-
-    currentVentSpeed = ventSpeedFromActionCode(newAction);
-    currentActionLabel = newAction->description;
-
-    haveToPublish = true;
-
-    mqtt_PublishUpdate();
-  }
-  //------------------------------------
-  return haveToPublish;
-}
-//==================================================================================================
-void prepareMessageToSend(char* message) {
-  message[0] = currentVentSpeed + (byte)'0';
-  message[1] = currentActionCode + (byte)'0';
-
-  mqtt_PublishUpdate();
-}
 //==================================================================================================
 byte actionCodeFromVentSpeed(byte newVentSpeed) {
   byte newActionCode = ACTION_NOP;
