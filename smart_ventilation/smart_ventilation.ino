@@ -12,10 +12,6 @@
 #define COMM_ROLE "OFFLINE-WORKER"
 
 //= INCLUDES =======================================================================================
-#if defined(DEBUG) || defined(RfLogsToSerial) || defined(I2CLogsToSerial)
-#include <stdio.h>  // for function sprintf
-#endif
-
 #include "Common.h"
 #include "Remotes.h"
 #include "Actions.h"
@@ -36,7 +32,7 @@ void setup() {
 #ifdef DEBUG
   // Open serial communications and wait for port to open:
   Serial.begin(115200);
-  Serial.println(F("START-UP >>>"));
+  Serial.println(F("START-UP >>>>>>>>>>>>>>>"));
 #endif
   //..............................
   // initialize digital pin LED_INDICATOR_PIN as an output.
@@ -66,11 +62,11 @@ void setup() {
   display_Clear2ndLine();
   //..............................
 #ifdef DEBUG
-  Serial.println(F("START-UP <<<"));
+  Serial.println(F("START-UP <<<<<<<<<<<<<<<"));
 #endif
 }
 //**************************************************************************************************
-//==================================================================================================
+//OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 void loop() {
   if (rf433_ActIfActivity()) {
     // act
@@ -87,6 +83,7 @@ void loop() {
     delay(10 * TIME_TICK);
   }
 }
+//OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 //==================================================================================================
 void __printSwVersion() {
   char boot_message[16];
