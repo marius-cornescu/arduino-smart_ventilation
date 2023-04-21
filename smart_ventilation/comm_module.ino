@@ -14,9 +14,6 @@ void prepareMessageToSend(char* message);
 //= VARIABLES ======================================================================================
 RtznCommProtocol commProto(COMM_ROLE, PAYLOAD_SIZE, &processReceivedMessage, &prepareMessageToSend);
 
-byte currentVentSpeed = 0;
-byte currentActionCode = ACTION_NOP;
-
 #endif
 //==================================================================================================
 //**************************************************************************************************
@@ -38,9 +35,9 @@ void comm_Setup() {
 }
 //**************************************************************************************************
 //==================================================================================================
-void comm_ActOnNewDataToSend(const Action* action) {
+void comm_ActOnNewDataToSend() {
 #ifdef UseCOMMPro
-  currentActionCode = action->actionCode;
+  currentActionCode = previousAction->actionCode;
 
   commProto.actOnPollMessage();
 #endif
@@ -68,12 +65,14 @@ bool comm_ActIfReceivedMessage() {
 bool processReceivedMessage(const char* message) {
   bool haveToPublish = false;
   //------------------------------------
-  byte newVentSpeed = message[0] - (byte)'0';
-  // ignore - the meat is in the action
-  //------------------------------------
-  byte newActionCode = message[1] - (byte)'0';
-  if (newActionCode != ACTION_NOP && currentActionCode != newActionCode) {
+  // get actionCode
+  char currentActionCodeString[ACTION_PAYLOAD_SIZE + 1];
+  memcpy(currentActionCodeString, &message[PAYLOAD_ACTION_START], ACTION_PAYLOAD_SIZE);
+  byte newActionCode = atoi(currentActionCodeString);
+  
+  if (newActionCode != ACTION_NOP && newActionCode != previousAction->actionCode) {
     currentActionCode = newActionCode;
+
     haveToPublish = true;
   }
   //------------------------------------
@@ -81,8 +80,18 @@ bool processReceivedMessage(const char* message) {
 }
 //==================================================================================================
 void prepareMessageToSend(char* message) {
-  message[0] = currentVentSpeed + (byte)'0';
-  message[1] = currentActionCode + (byte)'0';
+  // add speed
+  char currentSpeedString[SPEED_PAYLOAD_SIZE + 1];
+  sprintf(currentSpeedString, "%01d", currentVentSpeed);
+  memcpy(&message[PAYLOAD_SPEED_START], currentSpeedString, SPEED_PAYLOAD_SIZE);
+
+  // add actionCode
+  char currentActionCodeString[ACTION_PAYLOAD_SIZE + 1];
+  sprintf(currentActionCodeString, "%02d", previousAction->actionCode);
+  memcpy(&message[PAYLOAD_ACTION_START], currentActionCodeString, ACTION_PAYLOAD_SIZE);
+
+  // add actionCodeLabel
+  memcpy(&message[PAYLOAD_LABEL_START], previousAction->description, LABEL_PAYLOAD_SIZE);
 }
 //==================================================================================================
 #endif

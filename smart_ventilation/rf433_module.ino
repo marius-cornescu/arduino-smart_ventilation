@@ -23,7 +23,7 @@ void rf433_Setup() {
   //..............................
   rfRx.enableReceive(RF_INTERRUPT_D2_PIN);
   //..............................
-  delay(TIME_TICK * 1);
+  delay(1 * TIME_TICK);
 #ifdef DEBUG
   Serial.println(F("RF433:Setup <<<"));
 #endif

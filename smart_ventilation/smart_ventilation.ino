@@ -27,6 +27,8 @@
 const byte LED_INDICATOR_PIN = LED_BUILTIN;  // choose the pin for the LED // D13
 //------------------------------------------------
 //= VARIABLES ======================================================================================
+byte currentVentSpeed = 0;
+byte currentActionCode = ACTION_NOP;
 
 //==================================================================================================
 //**************************************************************************************************
@@ -43,7 +45,7 @@ void setup() {
   // i2C
   Wire.begin();
   //
-  delay(TIME_TICK * 50);
+  delay(50 * TIME_TICK);
   //
   display_Setup();
   __printSwVersion();
@@ -58,7 +60,7 @@ void setup() {
   //
   comm_Setup();
   //
-  delay(TIME_TICK * 50);
+  delay(50 * TIME_TICK);
   //
   digitalWrite(LED_INDICATOR_PIN, LOW);
   display_Clear2ndLine();
@@ -82,7 +84,7 @@ void loop() {
     comm_ActIfReceivedMessage();
     //
     menu_ActIfActivity();
-    delay(TIME_TICK * 10);
+    delay(10 * TIME_TICK);
   }
 }
 //==================================================================================================

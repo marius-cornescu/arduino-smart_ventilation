@@ -45,6 +45,7 @@ void comm_ActOnNewDataToSend() {
 bool comm_ActIfReceivedMessage() {
 #ifdef UseCOMMPro
   if (commProto.hasMessageInInboxThenAct() && commProto.isHaveToPublish()) {
+    commProto.setHaveToPublish(false);
     return true;
   }
 #endif
@@ -57,26 +58,35 @@ bool comm_ActIfReceivedMessage() {
 bool processReceivedMessage(const char* message) {
   bool haveToPublish = false;
   //------------------------------------
-  byte newVentSpeed = message[0] - (byte)'0';
-  // ignore - the meat is in the action
+  // get speed
+  char currentSpeedString[SPEED_PAYLOAD_SIZE + 1];
+  memcpy(currentSpeedString, &message[PAYLOAD_SPEED_START], SPEED_PAYLOAD_SIZE);
+  byte newVentSpeed = atoi(currentSpeedString);
   //------------------------------------
-  byte newActionCode = message[1] - (byte)'0';
-  if (newActionCode != ACTION_NOP) {
-    const Action* newAction = getActionByActionCode(newActionCode);
-
-    currentVentSpeed = ventSpeedFromActionCode(newAction);
+  // get actionCode
+  char currentActionCodeString[ACTION_PAYLOAD_SIZE + 1];
+  memcpy(currentActionCodeString, &message[PAYLOAD_ACTION_START], ACTION_PAYLOAD_SIZE);
+  byte newActionCode = atoi(currentActionCodeString);
+  
+  if (newActionCode != ACTION_NOP && newActionCode != currentActionCode) {
+    currentVentSpeed = newVentSpeed;
     currentActionCode = newActionCode;
-    currentActionLabel = newAction->description;
 
     haveToPublish = true;
   }
+  //------------------------------------
+  // get actionCodeLabel
+  memset(currentActionLabel, 0, LABEL_PAYLOAD_SIZE);
+  memcpy(currentActionLabel, &message[PAYLOAD_LABEL_START], LABEL_PAYLOAD_SIZE);
   //------------------------------------
   return haveToPublish;
 }
 //==================================================================================================
 void prepareMessageToSend(char* message) {
-  message[0] = currentVentSpeed + (byte)'0';
-  message[1] = currentActionCode + (byte)'0';
+  // add actionCode
+  char currentActionCodeString[ACTION_PAYLOAD_SIZE + 1];
+  sprintf(currentActionCodeString, "%02d", currentActionCode);
+  memcpy(&message[PAYLOAD_ACTION_START], currentActionCodeString, ACTION_PAYLOAD_SIZE);
 }
 //==================================================================================================
 #endif

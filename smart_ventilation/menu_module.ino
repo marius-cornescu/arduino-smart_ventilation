@@ -60,7 +60,7 @@ void menu_Setup() {
   //..............................
   buttons.digitalWrite(LED_RED_1, OFF);
   //..............................
-  delay(TIME_TICK * 10);
+  delay(10 * TIME_TICK);
 #ifdef DEBUG
   Serial.println(F("MENU:Setup <<<"));
 #endif

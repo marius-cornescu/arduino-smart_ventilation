@@ -13,7 +13,9 @@
 // Built-In LED: LOW is on and HIGH is off for blue led
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #define PUBLISH_SPEED_TOPIC "home/ventilation/unit-A/speed"
-#define PUBLISH_ACTION_TOPIC "home/ventilation/unit-A/actionCode"
+#define PUBLISH_ACTION_CODE_TOPIC "home/ventilation/unit-A/actionCode"
+#define PUBLISH_ACTION_LABEL_TOPIC "home/ventilation/unit-A/actionLabel"
+
 #define SUBSCRIBE_TOPIC "home/ventilation/unit-A/command"
 
 #define COMM_ROLE "ONLINE-WORKER"
@@ -23,16 +25,17 @@
 //#define DEBUG
 //------------------------------------------------
 // Various Features
-#define UseCOMMPro            // Use the IoT module                         // uses ??% of memory
+#define UseCOMMPro  // Use the IoT module                         // uses ??% of memory
 
 //= INCLUDES =======================================================================================
 #include "Common.h"
+#include "CommCommon.h"
+
 #include "Secrets.h"
 #include <ESP8266WiFi.h>
 //#include <BlynkSimpleEsp8266.h> // non-SSL
 #include <BlynkSimpleEsp8266_SSL.h>
 
-#include "CommCommon.h"
 #include "RtznCommProtocol.h"
 #include "Actions.h"
 
@@ -49,11 +52,11 @@ const int LED_INDICATOR_PIN = LED_BUILTIN;
 BlynkTimer timer;
 //..............................
 WiFiClient espClient;
+//..............................
 
 byte currentVentSpeed = 0;
 byte currentActionCode = ACTION_NOP;
-
-const char* currentActionLabel = (&NoAction)->description;
+char currentActionLabel[LABEL_PAYLOAD_SIZE];
 
 //##################################################################################################
 // function will run every time Blynk connection is established
@@ -75,8 +78,6 @@ BLYNK_WRITE(V0) {                           // values [0..3]
 
     comm_ActOnNewDataToSend();
 
-    mqtt_PublishUpdate();
-
     // Clear the ActionCode
     currentActionCode = 0;
   }
@@ -87,14 +88,9 @@ BLYNK_WRITE(V1) {                           // values [1..90]
   int newActionCode = (byte)param.asInt();  // assigning incoming value from pin V1 to a variable
 
   if (newActionCode != currentActionCode) {
-    const Action* currentAction = getActionByActionCode(newActionCode);
-
-    currentActionCode = currentAction->actionCode;
-    currentActionLabel = currentAction->description;
+    currentActionCode = newActionCode;
 
     comm_ActOnNewDataToSend();
-
-    mqtt_PublishUpdate();
 
     // Clear the ActionCode
     currentActionCode = 0;
@@ -110,6 +106,10 @@ void timerEvent() {
     Blynk.virtualWrite(V2, currentActionLabel);
 
     mqtt_PublishUpdate();
+
+    // Clear the ActionCode
+    currentActionCode = 0;
+    Blynk.virtualWrite(V1, currentActionCode);
   }
 }
 //##################################################################################################
@@ -151,46 +151,28 @@ byte actionCodeFromVentSpeed(byte newVentSpeed) {
   byte newActionCode = ACTION_NOP;
 
   if (newVentSpeed == 0) {
-    newActionCode = ActionVentOff.actionCode;
+    newActionCode = ACTION_4;
   }
   if (newVentSpeed == 1) {
     if (currentVentSpeed == 0) {
-      newActionCode = ActionVentOn.actionCode;
+      newActionCode = ACTION_5;
     } else {
-      newActionCode = ActionVent1.actionCode;
+      newActionCode = ACTION_1;
     }
   }
   if (newVentSpeed == 2) {
-    newActionCode = ActionVent2.actionCode;
+    newActionCode = ACTION_2;
   }
   if (newVentSpeed == 3) {
-    newActionCode = ActionVent3.actionCode;
+    newActionCode = ACTION_3;
   }
 
   return newActionCode;
 }
 //==================================================================================================
-byte ventSpeedFromActionCode(const Action* newAction) {
-  byte newVentSpeed = currentVentSpeed;
-
-  if (newAction == &ActionVentOff) {
-    newVentSpeed = 0;
-  }
-  if (newAction == &ActionVent1) {
-    newVentSpeed = 1;
-  }
-  if (newAction == &ActionVent2) {
-    newVentSpeed = 2;
-  }
-  if (newAction == &ActionVent3 || newAction == &ActionVent3Vent1Short || newAction == &ActionVent3Vent1Long) {
-    newVentSpeed = 3;
-  }
-
-  return newVentSpeed;
-}
-//==================================================================================================
 void mqtt_PublishUpdate() {
   mqtt_PublishInt(PUBLISH_SPEED_TOPIC, currentVentSpeed);
-  mqtt_PublishInt(PUBLISH_ACTION_TOPIC, currentActionCode);
+  mqtt_PublishInt(PUBLISH_ACTION_CODE_TOPIC, currentActionCode);
+  mqtt_PublishString(PUBLISH_ACTION_LABEL_TOPIC, currentActionLabel);
 }
 //==================================================================================================
