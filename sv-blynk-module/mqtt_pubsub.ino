@@ -7,14 +7,11 @@
 // MQTT Broker IP address, example:
 const char* mqtt_server = MQTT_BROKER_ADDRESS;
 
+unsigned long PUBLISH_COLLDOWN_TIME = 5 * SEC;      // value in milliseconds
+
 //= VARIABLES ======================================================================================
 PubSubClient mqttClient(espClient);
-long lastMsg = 0;
-char msg[50];
-int value = 0;
-
-float temperature = 0;
-float humidity = 0;
+unsigned long lastMqttPublish = 0;
 
 //==================================================================================================
 //**************************************************************************************************
@@ -24,7 +21,7 @@ void mqtt_Setup() {
 #endif
   //..............................
   mqttClient.setServer(mqtt_server, 1883);
-  //mqttClient.setCallback(callback);
+  mqttClient.setCallback(mqtt_Callback);
   //..............................
   delay(10 * TIME_TICK);
 #ifdef DEBUG
@@ -48,11 +45,11 @@ void mqtt_Reconnect() {
 #endif
     // Attempt to connect
     if (mqttClient.connect(HOST_NAME)) {
-#ifdef DEBUG      
+#ifdef DEBUG
       Serial.println("connected");
 #endif
       // Subscribe
-      mqttClient.subscribe("esp32/output");
+      mqttClient.subscribe(SUBSCRIBE_TOPIC);
     } else {
 #ifdef DEBUG
       Serial.print("failed, rc=");
@@ -63,6 +60,9 @@ void mqtt_Reconnect() {
       delay(500 * TIME_TICK);
     }
   }
+}
+//==================================================================================================
+void mqtt_Callback(char* topic, byte* message, unsigned int length) {
 }
 //==================================================================================================
 void mqtt_PublishInt(const char* topic, byte value) {
@@ -77,5 +77,18 @@ void mqtt_PublishFloat(const char* topic, float value) {
   char valueString[8];
   dtostrf(value, 1, 2, valueString);
   mqttClient.publish(topic, valueString);
+}
+//==================================================================================================
+void mqtt_PublishString(const char* topic, const char* value) {
+  mqttClient.publish(topic, value);
+}
+//==================================================================================================
+bool mqtt_ShouldPublish() {
+  if (millis() - lastMqttPublish <= PUBLISH_COLLDOWN_TIME) {
+    return false;
+  } else {
+    lastMqttPublish = millis();
+    return true;
+  }
 }
 //==================================================================================================

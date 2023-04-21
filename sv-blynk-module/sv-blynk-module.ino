@@ -12,6 +12,13 @@
 #define ESP8266_GPIO3 3  // RX
 // Built-In LED: LOW is on and HIGH is off for blue led
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#define PUBLISH_SPEED_TOPIC "home/ventilation/unit-A/speed"
+#define PUBLISH_ACTION_TOPIC "home/ventilation/unit-A/actionCode"
+#define SUBSCRIBE_TOPIC "home/ventilation/unit-A/command"
+
+#define COMM_ROLE "ONLINE-WORKER"
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //#define BLYNK_PRINT Serial
 //#define DEBUG
 
@@ -22,7 +29,8 @@
 //#include <BlynkSimpleEsp8266.h> // non-SSL
 #include <BlynkSimpleEsp8266_SSL.h>
 
-#include "Artizan-CommProtocol.h"
+#include "CommCommon.h"
+#include "RtznCommProtocol.h"
 #include "Actions.h"
 
 //= CONSTANTS ======================================================================================
@@ -35,15 +43,14 @@ const char pass[] = WIFI_PASSWORD;
 const int LED_INDICATOR_PIN = LED_BUILTIN;
 
 bool processReceivedMessage(const char* message);
-const char* prepareMessageToSend();
+void prepareMessageToSend(char* message);
 
 //= VARIABLES ======================================================================================
 BlynkTimer timer;
 //..............................
 WiFiClient espClient;
 //..............................
-
-RtznCommProtocol commProto("ONLINE-WORKER", &processReceivedMessage, &prepareMessageToSend);
+RtznCommProtocol commProto(COMM_ROLE, PAYLOAD_SIZE, &processReceivedMessage, &prepareMessageToSend);
 
 byte currentVentSpeed = 0;
 byte currentActionCode = ACTION_NOP;
@@ -95,11 +102,7 @@ BLYNK_WRITE(V1) {                           // values [1..90]
 //##################################################################################################
 void timerEvent() {
   // You can send any value at any time. Don't send more that 10 values per second.
-  if (commProto.hasMessageInInboxThenReadMessage()) {
-    commProto.actOnMessage();
-  }
-  //
-  if (commProto.isHaveToPublish()) {
+  if (commProto.hasMessageInInboxThenAct() && commProto.isHaveToPublish()) {
     Blynk.virtualWrite(V0, currentVentSpeed);
     Blynk.virtualWrite(V1, currentActionCode);
     Blynk.virtualWrite(V2, currentActionLabel);
@@ -115,7 +118,7 @@ void setup() {
   while (!Serial) { ; }
   //..............................
 #ifdef DEBUG
-  Serial.println("VentMaster:Setup >>>");
+  Serial.println(F("START-UP >>>>>>>>>>>>>>>"));
 #endif
   //..............................
   WiFi.hostname(host_name);
@@ -127,7 +130,7 @@ void setup() {
   mqtt_Setup();
   //..............................
 #ifdef DEBUG
-  Serial.println("VentMaster:Setup <<<");
+  Serial.println(F("START-UP <<<<<<<<<<<<<<<"));
 #endif
 }
 //**************************************************************************************************
@@ -160,15 +163,11 @@ bool processReceivedMessage(const char* message) {
   return haveToPublish;
 }
 //==================================================================================================
-const char* prepareMessageToSend() {
-  char* message = new char[4];
-  memset(message, 0, 4);
+void prepareMessageToSend(char* message) {
   message[0] = currentVentSpeed + (byte)'0';
   message[1] = currentActionCode + (byte)'0';
 
   mqtt_PublishUpdate();
-
-  return message;
 }
 //==================================================================================================
 byte actionCodeFromVentSpeed(byte newVentSpeed) {
@@ -214,8 +213,7 @@ byte ventSpeedFromActionCode(const Action* newAction) {
 }
 //==================================================================================================
 void mqtt_PublishUpdate() {
-  mqtt_PublishInt("home/ventilation/speed", currentVentSpeed);
-  mqtt_PublishInt("home/ventilation/actionCode", currentActionCode);
-  mqtt_PublishInt("home/ventilation/actionLabel", 0); // currentActionLabel
+  mqtt_PublishInt(PUBLISH_SPEED_TOPIC, currentVentSpeed);
+  mqtt_PublishInt(PUBLISH_ACTION_TOPIC, currentActionCode);
 }
 //==================================================================================================

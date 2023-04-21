@@ -2,15 +2,16 @@
 
 //= INCLUDES =======================================================================================
 #include "Common.h"
-#include "Artizan-CommProtocol.h"
+#include "CommCommon.h"
+#include "RtznCommProtocol.h"
 
 //= CONSTANTS ======================================================================================
 //----------------------------------
 bool processReceivedMessage(const char* message);
-const char* prepareMessageToSend();
+void prepareMessageToSend(char* message);
 
 //= VARIABLES ======================================================================================
-RtznCommProtocol commProto("OFFLINE-WORKER", &processReceivedMessage, &prepareMessageToSend);
+RtznCommProtocol commProto(COMM_ROLE, PAYLOAD_SIZE, &processReceivedMessage, &prepareMessageToSend);
 
 byte currentVentSpeed = 0;
 byte currentActionCode = ACTION_NOP;
@@ -36,11 +37,8 @@ void iot_Setup() {
 //==================================================================================================
 void iot_ActIfActivity() {
 #ifdef UseIoT
-  if (commProto.hasMessageInInboxThenReadMessage()) {
-    commProto.actOnMessage();
-    if (commProto.isHaveToPublish()) {
-      __actOnPartnerDataChanged();
-    }
+  if (commProto.hasMessageInInboxThenAct() && commProto.isHaveToPublish()) {
+    __actOnPartnerDataChanged();
   }
 #endif
 }
@@ -81,13 +79,9 @@ bool processReceivedMessage(const char* message) {
   return haveToPublish;
 }
 //==================================================================================================
-const char* prepareMessageToSend() {
-  char* message = new char[4];
-  memset(message, 0, 4);
+void prepareMessageToSend(char* message) {
   message[0] = currentVentSpeed + (byte)'0';
   message[1] = currentActionCode + (byte)'0';
-
-  return message;
 }
 //==================================================================================================
 #endif
