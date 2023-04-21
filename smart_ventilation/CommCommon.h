@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _HEADERFILE_COMM_COMMON
 #define _HEADERFILE_COMM_COMMON
 //= CONSTANTS ======================================================================================
@@ -17,4 +18,4 @@ const byte PAYLOAD_SIZE = SPEED_PAYLOAD_SIZE + 1 + ACTION_PAYLOAD_SIZE + 1 + LAB
 
 //= VARIABLES ======================================================================================
 //==================================================================================================
-#endif  // _HEADERFILE_COMM_PROTOCOL
+#endif  // _HEADERFILE_COMM_COMMON

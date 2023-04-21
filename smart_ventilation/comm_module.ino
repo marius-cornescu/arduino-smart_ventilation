@@ -82,7 +82,7 @@ bool processReceivedMessage(const char* message) {
 void prepareMessageToSend(char* message) {
   // add speed
   char currentSpeedString[SPEED_PAYLOAD_SIZE + 1];
-  sprintf(currentSpeedString, "%01d", currentVentSpeed);
+  sprintf(currentSpeedString, "%1d", currentVentSpeed);
   memcpy(&message[PAYLOAD_SPEED_START], currentSpeedString, SPEED_PAYLOAD_SIZE);
 
   // add actionCode
@@ -91,7 +91,9 @@ void prepareMessageToSend(char* message) {
   memcpy(&message[PAYLOAD_ACTION_START], currentActionCodeString, ACTION_PAYLOAD_SIZE);
 
   // add actionCodeLabel
-  memcpy(&message[PAYLOAD_LABEL_START], previousAction->description, LABEL_PAYLOAD_SIZE);
+  char currentActionLabelString[LABEL_PAYLOAD_SIZE + 1];
+  sprintf(currentActionLabelString, "%s", previousAction->description);
+  memcpy(&message[PAYLOAD_LABEL_START], currentActionLabelString, LABEL_PAYLOAD_SIZE);
 }
 //==================================================================================================
 #endif

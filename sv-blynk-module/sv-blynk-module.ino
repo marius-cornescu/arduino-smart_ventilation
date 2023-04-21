@@ -12,11 +12,8 @@
 #define ESP8266_GPIO3 3  // RX
 // Built-In LED: LOW is on and HIGH is off for blue led
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#define PUBLISH_SPEED_TOPIC "home/ventilation/unit-A/speed"
-#define PUBLISH_ACTION_CODE_TOPIC "home/ventilation/unit-A/actionCode"
-#define PUBLISH_ACTION_LABEL_TOPIC "home/ventilation/unit-A/actionLabel"
-
-#define SUBSCRIBE_TOPIC "home/ventilation/unit-A/command"
+#define PUBLISH_TOPIC "home/ventilation/unit-A/status"
+#define SUBSCRIBE_TOPIC "home/ventilation/unit-A/command/+"
 
 #define COMM_ROLE "ONLINE-WORKER"
 
@@ -71,31 +68,13 @@ BLYNK_CONNECTED() {
 // will run every time Slider Widget writes values to Virtual Pin V0
 BLYNK_WRITE(V0) {                           // values [0..3]
   byte newVentSpeed = (byte)param.asInt();  // assigning incoming value from pin V0 to a variable
-
-  if (newVentSpeed != currentVentSpeed) {
-    currentVentSpeed = newVentSpeed;
-    currentActionCode = actionCodeFromVentSpeed(newVentSpeed);
-
-    comm_ActOnNewDataToSend();
-
-    // Clear the ActionCode
-    currentActionCode = 0;
-  }
+  onVentilationSpeedChanged(newVentSpeed, false);
 }
 //##################################################################################################
 // will run every time Action Widget writes values to Virtual Pin V1
 BLYNK_WRITE(V1) {                           // values [1..90]
-  int newActionCode = (byte)param.asInt();  // assigning incoming value from pin V1 to a variable
-
-  if (newActionCode != currentActionCode) {
-    currentActionCode = newActionCode;
-
-    comm_ActOnNewDataToSend();
-
-    // Clear the ActionCode
-    currentActionCode = 0;
-    Blynk.virtualWrite(V1, currentActionCode);
-  }
+  byte newActionCode = (byte)param.asInt();  // assigning incoming value from pin V1 to a variable
+  onActionCodeChanged(newActionCode, true);
 }
 //##################################################################################################
 void timerEvent() {
@@ -147,6 +126,37 @@ void loop() {
 }
 //OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 //==================================================================================================
+void onVentilationSpeedChanged(byte newVentSpeed, bool updateBlynk) {
+  if (newVentSpeed != currentVentSpeed && newVentSpeed >= 0 && newVentSpeed <= 3) {
+    currentActionCode = actionCodeFromVentSpeed(newVentSpeed);
+    currentVentSpeed = newVentSpeed;
+
+    comm_ActOnNewDataToSend();
+
+    // Clear the ActionCode
+    currentActionCode = 0;
+
+    if (updateBlynk) {
+      Blynk.virtualWrite(V0, currentVentSpeed);
+    }
+  }
+}
+//==================================================================================================
+void onActionCodeChanged(byte newActionCode, bool updateBlynk) {
+  if (newActionCode != currentActionCode && newActionCode > ACTION_NOP && newActionCode < ACTION_MAX_VALID) {
+    currentActionCode = newActionCode;
+
+    comm_ActOnNewDataToSend();
+
+    // Clear the ActionCode
+    currentActionCode = 0;
+    
+    if (updateBlynk) {
+      Blynk.virtualWrite(V1, currentActionCode);
+    }
+  }
+}
+//==================================================================================================
 byte actionCodeFromVentSpeed(byte newVentSpeed) {
   byte newActionCode = ACTION_NOP;
 
@@ -171,8 +181,9 @@ byte actionCodeFromVentSpeed(byte newVentSpeed) {
 }
 //==================================================================================================
 void mqtt_PublishUpdate() {
-  mqtt_PublishInt(PUBLISH_SPEED_TOPIC, currentVentSpeed);
-  mqtt_PublishInt(PUBLISH_ACTION_CODE_TOPIC, currentActionCode);
-  mqtt_PublishString(PUBLISH_ACTION_LABEL_TOPIC, currentActionLabel);
+  char statusMessage[200];
+  sprintf(statusMessage, "{\"speed\": %d, \"actionCode\": %d, \"actionLabel\": \"%s\", \"device\": { \"version\": \"%s\"}}", currentVentSpeed, currentActionCode, currentActionLabel, SW_VERSION);
+  //
+  mqtt_PublishString(PUBLISH_TOPIC, statusMessage);
 }
 //==================================================================================================

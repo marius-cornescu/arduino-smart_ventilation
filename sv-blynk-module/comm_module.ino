@@ -61,12 +61,13 @@ bool processReceivedMessage(const char* message) {
   // get speed
   char currentSpeedString[SPEED_PAYLOAD_SIZE + 1];
   memcpy(currentSpeedString, &message[PAYLOAD_SPEED_START], SPEED_PAYLOAD_SIZE);
-  byte newVentSpeed = atoi(currentSpeedString);
+  currentSpeedString[SPEED_PAYLOAD_SIZE] = '\0';
+  byte newVentSpeed = (byte)atoi(currentSpeedString);
   //------------------------------------
   // get actionCode
   char currentActionCodeString[ACTION_PAYLOAD_SIZE + 1];
   memcpy(currentActionCodeString, &message[PAYLOAD_ACTION_START], ACTION_PAYLOAD_SIZE);
-  byte newActionCode = atoi(currentActionCodeString);
+  byte newActionCode = (byte)atoi(currentActionCodeString);
   
   if (newActionCode != ACTION_NOP && newActionCode != currentActionCode) {
     currentVentSpeed = newVentSpeed;
