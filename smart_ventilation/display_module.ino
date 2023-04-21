@@ -39,7 +39,7 @@ void display_Setup() {
   lcd.setCursor(0, LINE2);
   lcd.print(TEST_LINE);
   lcd.home();
-  delay(TIME_TICK * 50);
+  delay(50 * TIME_TICK);
   #endif
   //-------------------
   lcd.clear();

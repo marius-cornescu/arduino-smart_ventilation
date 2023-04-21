@@ -1,4 +1,6 @@
 //= DEFINES ========================================================================================
+#ifdef UseCOMMPro
+
 #define COMM_SKIP_GET_SPEED
 #define COMM_SKIP_GET_LABEL
 
@@ -8,7 +10,6 @@
 
 //= CONSTANTS ======================================================================================
 
-#ifdef UseCOMM
 //= VARIABLES ======================================================================================
 SerialTransfer commProto;
 
@@ -16,13 +17,14 @@ SerialTransfer commProto;
 //==================================================================================================
 //**************************************************************************************************
 void comm_Setup() {
-#ifdef UseCOMM
+#ifdef UseCOMMPro
 #ifdef DEBUG
   Serial.println(F("COMM:Setup >>>"));
 #endif
   //..............................
-  // Open serial communications
+  // Open serial communications and wait for port to open
   Serial.begin(115200);
+  while (!Serial) { ; }
   commProto.begin(Serial);
   //..............................
   delay(1 * TIME_TICK);
@@ -34,8 +36,8 @@ void comm_Setup() {
 //**************************************************************************************************
 //==================================================================================================
 void comm_ActOnNewDataToSend() {
-#ifdef UseCOMM
-  memset(payload, '|', PAYLOAD_SIZE);  // all 'zero' character
+#ifdef UseCOMMPro
+  memset(payload, '0', PAYLOAD_SIZE);  // all 'zero' character
   payload[PAYLOAD_SIZE - 1] = '\0';    // end with array terminator
   //
   _Data_To_Payload();
@@ -45,6 +47,30 @@ void comm_ActOnNewDataToSend() {
   commProto.sendDatum(payload);
 #endif
 }
+//==================================================================================================
+//==================================================================================================
+bool comm_ActIfReceivedMessage() {
+  bool hasUpdate = false;
+#ifdef UseCOMMPro
+  if (commProto.available()) {
+    memset(payload, '0', PAYLOAD_SIZE);  // all 'zero' character
+    payload[PAYLOAD_SIZE - 1] = '\0';    // end with array terminator
+    //
+    commProto.rxObj(payload);
+    //
+    __printPayloadIfDebug();
+    //
+    _Payload_To_Data();
+    //
+    __printDataIfDebug();
+    //
+    hasUpdate = true;
+  }
+#endif
+  return hasUpdate;
+}
+//==================================================================================================
+#ifdef UseCOMMPro
 //==================================================================================================
 void _Data_To_Payload() {
 #ifndef COMM_SKIP_SEND_SPEED
@@ -68,44 +94,23 @@ void _Data_To_Payload() {
 }
 //==================================================================================================
 //==================================================================================================
-bool comm_ActIfReceivedMessage() {
-  bool hasUpdate = false;
-#ifdef UseCOMM
-  if (commProto.available()) {
-    memset(payload, '0', PAYLOAD_SIZE);  // all 'zero' character
-    payload[PAYLOAD_SIZE - 1] = '\0';    // end with array terminator
-    //
-    commProto.rxObj(payload);
-    //
-    __printPayloadIfDebug();
-    //
-    _Payload_To_Data();
-    //
-    __printDataIfDebug();
-    //
-    hasUpdate = true;
-  }
-#endif
-  return hasUpdate;
-}
-//==================================================================================================
 void _Payload_To_Data() {
 #ifndef COMM_SKIP_GET_SPEED
-  // add speed
+  // get speed
   char currentSpeedString[SPEED_PAYLOAD_SIZE + 1];
   memcpy(currentSpeedString, &payload[PAYLOAD_SPEED_START], SPEED_PAYLOAD_SIZE);
   currentVentSpeed = atoi(currentSpeedString);
 #endif
 
 #ifndef COMM_SKIP_GET_ACTION
-  // add actionCode
+  // get actionCode
   char currentActionCodeString[ACTION_PAYLOAD_SIZE + 1];
   memcpy(currentActionCodeString, &payload[PAYLOAD_ACTION_START], ACTION_PAYLOAD_SIZE);
   currentActionCode = atoi(currentActionCodeString);
 #endif
 
 #ifndef COMM_SKIP_GET_LABEL
-  // add actionCodeLabel
+  // get actionCodeLabel
   memcpy(currentActionLabel, &payload[PAYLOAD_LABEL_START], LABEL_PAYLOAD_SIZE);
 #endif
 }
@@ -131,4 +136,6 @@ void __printDataIfDebug() {
   Serial.println();
 #endif
 }
+//==================================================================================================
+#endif
 //==================================================================================================

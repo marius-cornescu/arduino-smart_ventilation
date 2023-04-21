@@ -7,13 +7,10 @@
 // MQTT Broker IP address, example:
 const char* mqtt_server = MQTT_BROKER_ADDRESS;
 
-unsigned long CONNECTION_COLLDOWN_TIME = 20 * SEC;  // value in milliseconds
 unsigned long PUBLISH_COLLDOWN_TIME = 5 * SEC;      // value in milliseconds
 
 //= VARIABLES ======================================================================================
 PubSubClient mqttClient(espClient);
-
-unsigned long lastMqttConnection = 0;
 unsigned long lastMqttPublish = 0;
 
 //==================================================================================================
@@ -24,7 +21,7 @@ void mqtt_Setup() {
 #endif
   //..............................
   mqttClient.setServer(mqtt_server, 1883);
-  //mqttClient.setCallback(callback);
+  mqttClient.setCallback(mqtt_Callback);
   //..............................
   delay(10 * TIME_TICK);
 #ifdef DEBUG
@@ -34,10 +31,6 @@ void mqtt_Setup() {
 //**************************************************************************************************
 //==================================================================================================
 void mqtt_MaintainConnection() {
-  if (__SkipConnect()) {
-    return;
-  }
-
   if (!mqttClient.connected()) {
     mqtt_Reconnect();
   }
@@ -56,7 +49,7 @@ void mqtt_Reconnect() {
       Serial.println("connected");
 #endif
       // Subscribe
-      mqttClient.subscribe("home/ventilation/command");
+      mqttClient.subscribe(SUBSCRIBE_TOPIC);
     } else {
 #ifdef DEBUG
       Serial.print("failed, rc=");
@@ -69,10 +62,10 @@ void mqtt_Reconnect() {
   }
 }
 //==================================================================================================
+void mqtt_Callback(char* topic, byte* message, unsigned int length) {
+}
+//==================================================================================================
 void mqtt_PublishInt(const char* topic, int value) {
-  if (__SkipPublish()) {
-    return;
-  }
   // Convert the value to a char array
   char valueString[4];
   utoa((unsigned)value, valueString, 10);
@@ -80,9 +73,6 @@ void mqtt_PublishInt(const char* topic, int value) {
 }
 //==================================================================================================
 void mqtt_PublishFloat(const char* topic, float value) {
-  if (__SkipPublish()) {
-    return;
-  }
   // Convert the value to a char array
   char valueString[8];
   dtostrf(value, 1, 2, valueString);
@@ -90,27 +80,15 @@ void mqtt_PublishFloat(const char* topic, float value) {
 }
 //==================================================================================================
 void mqtt_PublishString(const char* topic, const char* value) {
-  if (__SkipPublish()) {
-    return;
-  }
   mqttClient.publish(topic, value);
 }
 //==================================================================================================
-bool __SkipConnect() {
-  if (millis() - lastMqttConnection <= CONNECTION_COLLDOWN_TIME) {
-    return true;
-  } else {
-    lastMqttConnection = millis();
-    return false;
-  }
-}
-//==================================================================================================
-bool __SkipPublish() {
+bool mqtt_ShouldPublish() {
   if (millis() - lastMqttPublish <= PUBLISH_COLLDOWN_TIME) {
-    return true;
+    return false;
   } else {
     lastMqttPublish = millis();
-    return false;
+    return true;
   }
 }
 //==================================================================================================

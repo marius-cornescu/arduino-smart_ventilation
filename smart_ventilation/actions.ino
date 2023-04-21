@@ -119,7 +119,6 @@ void __VentilationSpeed1() {
   digitalWrite(RELAY_1_PIN, isVentilationOnInV1 ? HIGH : LOW);
   digitalWrite(RELAY_2_PIN, HIGH);
   digitalWrite(RELAY_3_PIN, HIGH);
-
   currentVentSpeed = 1;
 }
 //==================================================================================================
@@ -127,7 +126,6 @@ void __VentilationSpeed2() {
   digitalWrite(RELAY_1_PIN, HIGH);
   digitalWrite(RELAY_2_PIN, LOW);
   digitalWrite(RELAY_3_PIN, HIGH);
-
   currentVentSpeed = 2;
 }
 //==================================================================================================
@@ -135,7 +133,6 @@ void __VentilationSpeed3() {
   digitalWrite(RELAY_1_PIN, HIGH);
   digitalWrite(RELAY_2_PIN, HIGH);
   digitalWrite(RELAY_3_PIN, LOW);
-
   currentVentSpeed = 3;
 }
 //==================================================================================================
@@ -153,13 +150,12 @@ void __VentilationOff() {
   digitalWrite(RELAY_1_PIN, LOW);  // V1 is reversed, so LOW is OFF
   digitalWrite(RELAY_2_PIN, HIGH);
   digitalWrite(RELAY_3_PIN, HIGH);
-
   currentVentSpeed = 0;
 }
 //==================================================================================================
 void __VentilationOn() {  // FLIP from 2 to 1, to go into low speed mode
   __VentilationSpeed2();
-  delay(TIME_TICK * 50);
+  delay(50 * TIME_TICK);
   actions_ProcessAction(&ActionVent1);
 }
 //==================================================================================================

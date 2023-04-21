@@ -12,8 +12,18 @@
 #define ESP8266_GPIO3 3  // RX
 // Built-In LED: LOW is on and HIGH is off for blue led
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#define PUBLISH_SPEED_TOPIC "home/ventilation/unit-A/speed"
+#define PUBLISH_ACTION_CODE_TOPIC "home/ventilation/unit-A/actionCode"
+#define PUBLISH_ACTION_LABEL_TOPIC "home/ventilation/unit-A/actionLabel"
+
+#define SUBSCRIBE_TOPIC "home/ventilation/unit-A/command"
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //#define BLYNK_PRINT Serial
 //#define DEBUG
+//------------------------------------------------
+// Various Features
+#define UseCOMMPro  // Use the IoT module                         // uses ??% of memory
 
 //= INCLUDES =======================================================================================
 #include "Common.h"
@@ -24,7 +34,7 @@
 //#include <BlynkSimpleEsp8266.h> // non-SSL
 #include <BlynkSimpleEsp8266_SSL.h>
 
-#include "Artizan-CommProtocol.h"
+#include "RtznCommProtocol.h"
 #include "Actions.h"
 
 //= CONSTANTS ======================================================================================
@@ -61,8 +71,8 @@ BLYNK_WRITE(V0) {                           // values [0..3]
   byte newVentSpeed = (byte)param.asInt();  // assigning incoming value from pin V0 to a variable
 
   if (newVentSpeed != currentVentSpeed) {
-    currentActionCode = actionCodeFromVentSpeed(newVentSpeed);
     currentVentSpeed = newVentSpeed;
+    currentActionCode = actionCodeFromVentSpeed(newVentSpeed);
 
     comm_ActOnNewDataToSend();
 
@@ -88,12 +98,15 @@ BLYNK_WRITE(V1) {                           // values [1..90]
 //##################################################################################################
 void timerEvent() {
   if (comm_ActIfReceivedMessage()) {
-
     Blynk.virtualWrite(V0, currentVentSpeed);
     Blynk.virtualWrite(V1, currentActionCode);
     Blynk.virtualWrite(V2, currentActionLabel);
 
     mqtt_PublishUpdate();
+
+    // Clear the ActionCode
+    currentActionCode = 0;
+    Blynk.virtualWrite(V1, currentActionCode);
   }
 }
 //##################################################################################################
@@ -105,7 +118,7 @@ void setup() {
   while (!Serial) { ; }
   //..............................
 #ifdef DEBUG
-  Serial.println("VentMaster:Setup >>>");
+  Serial.println(F("START-UP >>>>>>>>>>>>>>>"));
 #endif
   //..............................
   WiFi.hostname(host_name);
@@ -119,7 +132,7 @@ void setup() {
   mqtt_Setup();
   //..............................
 #ifdef DEBUG
-  Serial.println("VentMaster:Setup <<<");
+  Serial.println(F("START-UP <<<<<<<<<<<<<<<"));
 #endif
 }
 //**************************************************************************************************
@@ -155,8 +168,7 @@ byte actionCodeFromVentSpeed(byte newVentSpeed) {
 }
 //==================================================================================================
 void mqtt_PublishUpdate() {
-  mqtt_PublishInt("home/ventilation/unit-A/speed", currentVentSpeed);
-  mqtt_PublishInt("home/ventilation/unit-A/actionCode", currentActionCode);
-  mqtt_PublishString("home/ventilation/unit-A/actionLabel", currentActionLabel); // currentActionLabel
+  mqtt_PublishInt(PUBLISH_SPEED_TOPIC, currentVentSpeed);
+  mqtt_PublishInt(PUBLISH_ACTION_CODE_TOPIC, currentActionCode);
 }
 //==================================================================================================
