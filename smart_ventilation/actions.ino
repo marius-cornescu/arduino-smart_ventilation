@@ -116,6 +116,10 @@ void __VentilationSpeed1() {
 }
 //==================================================================================================
 void __VentilationSpeed2() {
+  if (isVentilationOnInV1 == false && currentVentSpeed == 0) {
+    __VentilationStart();
+  }
+
   digitalWrite(RELAY_1_PIN, HIGH);
   digitalWrite(RELAY_2_PIN, LOW);
   digitalWrite(RELAY_3_PIN, HIGH);
@@ -123,6 +127,10 @@ void __VentilationSpeed2() {
 }
 //==================================================================================================
 void __VentilationSpeed3() {
+  if (isVentilationOnInV1 == false && currentVentSpeed == 0) {
+    __VentilationStart();
+  }
+
   digitalWrite(RELAY_1_PIN, HIGH);
   digitalWrite(RELAY_2_PIN, HIGH);
   digitalWrite(RELAY_3_PIN, LOW);
@@ -146,10 +154,20 @@ void __VentilationOff() {
   currentVentSpeed = 0;
 }
 //==================================================================================================
-void __VentilationOn() {  // FLIP from 2 to 1, to go into low speed mode
+void __VentilationOn() {
+  __VentilationStart();
+  actions_ProcessAction(&ActionVent1);
+}
+//==================================================================================================
+void __VentilationStart() {  // FLIP from 2 to 1, to go into low speed mode
+  boolean isVentilationOnInV1Buffer = isVentilationOnInV1; // store to buffer
+  isVentilationOnInV1 = true;
+
   __VentilationSpeed2();
   delay(50 * TIME_TICK);
-  actions_ProcessAction(&ActionVent1);
+  __VentilationSpeed1();
+
+  isVentilationOnInV1 = isVentilationOnInV1Buffer; // restore from buffer
 }
 //==================================================================================================
 
