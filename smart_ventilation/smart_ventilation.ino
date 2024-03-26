@@ -22,7 +22,7 @@
 //= CONSTANTS ======================================================================================
 const byte LED_INDICATOR_PIN = LED_BUILTIN;  // choose the pin for the LED // D13
 //------------------------------------------------
-const unsigned long AUTO_RESET_GRACE_PERIOD = 12 * HOUR;
+const unsigned long AUTO_RESET_GRACE_PERIOD = 20 * HOUR;
 
 //= VARIABLES ======================================================================================
 byte currentVentSpeed = 0;
