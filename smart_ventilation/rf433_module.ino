@@ -40,6 +40,7 @@ bool rf433_ActIfActivity() {
       if (actions_ShouldProcessAction(currentAction)) {
         actions_ProcessAction(currentAction);
         display_ShowProgress();
+        display_ShowHour(clock_GetHour());
       }
     }
 

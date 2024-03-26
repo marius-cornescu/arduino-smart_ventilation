@@ -1,4 +1,5 @@
 //= DEFINES ========================================================================================
+#define DISPLAY_RUN_POS 13
 #define DISPLAY_STATUS_POS 15
 #define DISPLAY_I2C_ADDRESS 0x27
 
@@ -112,6 +113,15 @@ void display_Print2ndLine(const char* label) {
   lcd.print(BLANK_LINE);
   lcd.setCursor(0, LINE2);
   lcd.print(label);
+#endif
+}
+//==================================================================================================
+void display_ShowHour(unsigned int hour) {
+#ifdef UseDisplay
+  char buffer[30];
+  sprintf(buffer, "%02d", hour);
+  lcd.setCursor(DISPLAY_RUN_POS, LINE2);        // set the cursor to position 13, line 1
+  lcd.print(buffer);
 #endif
 }
 //==================================================================================================

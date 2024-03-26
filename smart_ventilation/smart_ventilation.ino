@@ -8,7 +8,7 @@
 // Various Features
 #define UseDisplay        // Log information and actions to the Display // uses 18% of memory
 #define UseRealTimeClock  // Use the RTC                                // uses 1% of memory
-#define UseCOMMPro            // Use the IoT module                         // uses ??% of memory
+#define UseCOMMPro        // Use the IoT module                         // uses ??% of memory
 #define COMM_ROLE "OFFLINE-WORKER"
 
 //= INCLUDES =======================================================================================
@@ -22,6 +22,8 @@
 //= CONSTANTS ======================================================================================
 const byte LED_INDICATOR_PIN = LED_BUILTIN;  // choose the pin for the LED // D13
 //------------------------------------------------
+const unsigned long AUTO_RESET_GRACE_PERIOD = 12 * HOUR;
+
 //= VARIABLES ======================================================================================
 byte currentVentSpeed = 0;
 byte currentActionCode = ACTION_NOP;
@@ -85,10 +87,17 @@ void loop() {
 }
 //OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 //==================================================================================================
+void __rebootAfterHours_atMidnight() {
+  if (millis() >= AUTO_RESET_GRACE_PERIOD && clock_HourIsEqualTo(0)) {
+    resetFunc();
+  }
+}
+//==================================================================================================
 void __printSwVersion() {
   char boot_message[16];
-  sprintf(boot_message, "BOOT v%10s", SW_VERSION);
+  sprintf(boot_message, "v%10s H:%02d", SW_VERSION, clock_GetHour());
   display_Print2ndLine(boot_message);
+  delay(10 * SEC);
 }
 //==================================================================================================
 //==================================================================================================

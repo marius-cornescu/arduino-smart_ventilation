@@ -69,6 +69,26 @@ void clock_TriggerIfAlarm() {
 #endif
 }
 //==================================================================================================
+bool clock_HourIsEqualTo(unsigned int hour) {
+  bool response = false;
+#ifdef UseRealTimeClock
+  DateTime now = myRTC.now();
+  if (now.hour() == hour) {
+    response = true;
+  }
+#endif
+  return response;
+}
+//==================================================================================================
+unsigned int clock_GetHour() {
+  unsigned int response = 99;
+#ifdef UseRealTimeClock
+  DateTime now = myRTC.now();
+  response = now.hour();
+#endif
+  return response;
+}
+//==================================================================================================
 #ifdef UseRealTimeClock
 //==================================================================================================
 void __Alarm1_TriggerIfAlarm() {
