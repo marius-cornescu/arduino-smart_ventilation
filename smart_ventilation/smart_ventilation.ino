@@ -22,7 +22,7 @@
 //= CONSTANTS ======================================================================================
 const byte LED_INDICATOR_PIN = LED_BUILTIN;  // choose the pin for the LED // D13
 //------------------------------------------------
-const unsigned long AUTO_RESET_GRACE_PERIOD = 20 * HOUR;
+const unsigned long AUTORESET_GRACE_PERIOD_HOURS = 20;
 
 //= VARIABLES ======================================================================================
 byte currentVentSpeed = 0;
@@ -82,20 +82,23 @@ void loop() {
     comm_ActIfReceivedMessage();
     //
     menu_ActIfActivity();
+    //
+    __rebootAfterHours_atMidnight();
+    //
     delay(10 * TIME_TICK);
   }
 }
 //OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 //==================================================================================================
 void __rebootAfterHours_atMidnight() {
-  if (millis() >= AUTO_RESET_GRACE_PERIOD && clock_HourIsEqualTo(0)) {
+  if (clock_GetUptimeInHours() >= AUTORESET_GRACE_PERIOD_HOURS && clock_HourIsEqualTo(0)) {
     resetFunc();
   }
 }
 //==================================================================================================
 void __printSwVersion() {
   char boot_message[16];
-  sprintf(boot_message, "v%10s H:%02d", SW_VERSION, clock_GetHour());
+  sprintf(boot_message, "v%10s/%02d:%02d", SW_VERSION, clock_GetHour(), clock_GetMinute());
   display_Print2ndLine(boot_message);
   delay(4 * SEC);
 }

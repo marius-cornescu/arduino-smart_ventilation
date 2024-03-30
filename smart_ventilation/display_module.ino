@@ -1,11 +1,12 @@
 //= DEFINES ========================================================================================
-#define DISPLAY_RUN_POS 13
-#define DISPLAY_STATUS_POS 15
 #define DISPLAY_I2C_ADDRESS 0x27
-
+// First 15 positions are visible
+#define DISPLAY_RUN_POS 11
+#define DISPLAY_STATUS_POS 15
+//
 #define BLANK_LINE F("                                        ")
 #define TEST_LINE F("***************#123456789012345678901234")
-
+//                   1234567890123456789012345678901234567890
 #define LINE1 0
 #define LINE2 1
 
@@ -73,8 +74,7 @@ void display_ShowProgress() {
     progress = 0;
   }
 
-  display_ShowDebug();
-
+  //display_ShowDebug();
 #endif
 }
 //==================================================================================================
@@ -120,12 +120,17 @@ void display_Print2ndLine(const char* label) {
 //==================================================================================================
 void display_ShowDebug() {
 #ifdef UseDisplay
-  unsigned int debug = millis() / HOUR;
-
   char buffer[30];
-  sprintf(buffer, "%02d", debug);
-  lcd.setCursor(DISPLAY_RUN_POS, LINE2);  // set the cursor to position 13, line 1
+  sprintf(buffer, "%02d|%02d", clock_GetUptimeInHours(), clock_GetHour());
+  lcd.setCursor(DISPLAY_RUN_POS, LINE2);  // set the cursor to position 11, line 1
   lcd.print(buffer);
+#endif
+}
+//==================================================================================================
+void display_ShowDebugFlag() {
+#ifdef UseDisplay
+  lcd.setCursor(DISPLAY_RUN_POS, LINE2);
+  lcd.print("X");
 #endif
 }
 //==================================================================================================

@@ -72,8 +72,7 @@ void clock_TriggerIfAlarm() {
 bool clock_HourIsEqualTo(unsigned int hour) {
   bool response = false;
 #ifdef UseRealTimeClock
-  DateTime now = myRTC.now();
-  if (now.hour() == hour) {
+  if (clock_GetHour() == hour) {
     response = true;
   }
 #endif
@@ -87,6 +86,19 @@ unsigned int clock_GetHour() {
   response = now.hour();
 #endif
   return response;
+}
+//==================================================================================================
+unsigned int clock_GetMinute() {
+  unsigned int response = 99;
+#ifdef UseRealTimeClock
+  DateTime now = myRTC.now();
+  response = now.minute();
+#endif
+  return response;
+}
+//==================================================================================================
+unsigned int clock_GetUptimeInHours() {
+  return millis() / HOUR;
 }
 //==================================================================================================
 #ifdef UseRealTimeClock

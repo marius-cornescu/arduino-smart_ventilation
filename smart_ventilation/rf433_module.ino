@@ -39,10 +39,10 @@ bool rf433_ActIfActivity() {
       const Action* currentAction = actions_ComputeActionForButton(buttonId);
       if (actions_ShouldProcessAction(currentAction)) {
         actions_ProcessAction(currentAction);
-        display_ShowProgress();
       }
     }
 
+    display_ShowProgress();
     rfRx.resetAvailable();
     digitalWrite(LED_INDICATOR_PIN, LOW);
     //
