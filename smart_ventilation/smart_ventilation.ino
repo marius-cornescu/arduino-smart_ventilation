@@ -98,7 +98,7 @@ void __rebootAfterHours_atMidnight() {
 //==================================================================================================
 void __printSwVersion() {
   char boot_message[16];
-  sprintf(boot_message, "v%10s/%02d:%02d", SW_VERSION, clock_GetHour(), clock_GetMinute());
+  sprintf(boot_message, "v%09s/%02d:%02d", SW_VERSION, clock_GetHour(), clock_GetMinute());
   display_Print2ndLine(boot_message);
   delay(4 * SEC);
 }

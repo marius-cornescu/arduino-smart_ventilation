@@ -37,6 +37,7 @@ void actions_Setup() {
 //**************************************************************************************************
 void __SetupFunctionsForActions() {
   NoAction.function = __NoAction;
+  ResetAction.function = __ResetAction;
   //
   ActionVent1.function = __VentilationSpeed1;
   ActionVent2.function = __VentilationSpeed2;
@@ -159,15 +160,19 @@ void __VentilationOn() {
   actions_ProcessAction(&ActionVent1);
 }
 //==================================================================================================
-void __VentilationStart() {  // FLIP from 2 to 1, to go into low speed mode
-  boolean isVentilationOnInV1Buffer = isVentilationOnInV1; // store to buffer
+void __VentilationStart() {                                 // FLIP from 2 to 1, to go into low speed mode
+  boolean isVentilationOnInV1Buffer = isVentilationOnInV1;  // store to buffer
   isVentilationOnInV1 = true;
 
   __VentilationSpeed2();
   delay(50 * TIME_TICK);
   __VentilationSpeed1();
 
-  isVentilationOnInV1 = isVentilationOnInV1Buffer; // restore from buffer
+  isVentilationOnInV1 = isVentilationOnInV1Buffer;  // restore from buffer
+}
+//==================================================================================================
+void __ResetAction() {
+  resetFunc();
 }
 //==================================================================================================
 
