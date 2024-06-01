@@ -10,6 +10,9 @@ const byte LED_RED_1 = P0;     //
 const byte ON = LOW;
 const byte OFF = HIGH;
 
+const byte BUTTON_PRESSED = LOW;
+const byte BUTTON_NOT_PRESSED = HIGH;
+
 //----------------------------------
 const byte BTN_NONE = 0;
 //----------------------------------
@@ -92,21 +95,21 @@ byte __readPressedButton(PCF8575 &io) {
   byte response = BTN_NONE;
   PCF8575::DigitalInput io_vals = io.digitalReadAll();
 
-  if(io_vals.p8 == 1) {
+  if(io_vals.p8 == BUTTON_PRESSED) {
     response = BTN_VENTILATION_1;
-  } else if(io_vals.p9 == 1) {
+  } else if(io_vals.p9 == BUTTON_PRESSED) {
     response = BTN_VENTILATION_2;
-  } else if(io_vals.p10 == 1) {
+  } else if(io_vals.p10 == BUTTON_PRESSED) {
     response = BTN_VENTILATION_3;
-  } else if(io_vals.p11 == 1) {
+  } else if(io_vals.p11 == BUTTON_PRESSED) {
     response = BTN_UP;
-  } else if(io_vals.p12 == 1) {
+  } else if(io_vals.p12 == BUTTON_PRESSED) {
     response = BTN_DOWN;
-  } else if(io_vals.p13 == 1) {
+  } else if(io_vals.p13 == BUTTON_PRESSED) {
     response = BTN_BACK;
-  } else if(io_vals.p14 == 1) {
+  } else if(io_vals.p14 == BUTTON_PRESSED) {
     response = BTN_FWARD;
-  } else if(io_vals.p15 == 1) {
+  } else if(io_vals.p15 == BUTTON_PRESSED) {
     response = BTN_ENTER;
   } else {
     response = BTN_NONE;
@@ -115,8 +118,8 @@ byte __readPressedButton(PCF8575 &io) {
 #ifdef I2CLogsToSerial
   char buffer[200];
 
-  sprintf(buffer, "|0=%d|1=%d|2=%d|3=%d|4=%d|5=%d|6=%d|7=%d||||8=%d|9=%d|10=%d|11=%d|12=%d|13=%d|14=%d|15=%d|", io_vals.p0, io_vals.p1, io_vals.p2, io_vals.p3, io_vals.p4, io_vals.p5, io_vals.p6, io_vals.p7, io_vals.p8, io_vals.p9, io_vals.p10, io_vals.p11, io_vals.p12, io_vals.p13, io_vals.p14, io_vals.p15);
-  //sprintf(buffer, "|8=%d|9=%d|10=%d|11=%d|12=%d|13=%d|14=%d|15=%d| => %d", io_vals.p8, io_vals.p9, io_vals.p10, io_vals.p11, io_vals.p12, io_vals.p13, io_vals.p14, io_vals.p15, response);
+  //sprintf(buffer, "|0=%d|1=%d|2=%d|3=%d|4=%d|5=%d|6=%d|7=%d||||8=%d|9=%d|10=%d|11=%d|12=%d|13=%d|14=%d|15=%d|", io_vals.p0, io_vals.p1, io_vals.p2, io_vals.p3, io_vals.p4, io_vals.p5, io_vals.p6, io_vals.p7, io_vals.p8, io_vals.p9, io_vals.p10, io_vals.p11, io_vals.p12, io_vals.p13, io_vals.p14, io_vals.p15);
+  sprintf(buffer, "|8=%d|9=%d|10=%d|11=%d|12=%d|13=%d|14=%d|15=%d| => %d", io_vals.p8, io_vals.p9, io_vals.p10, io_vals.p11, io_vals.p12, io_vals.p13, io_vals.p14, io_vals.p15, response);
   Serial.println(buffer);
 #endif
 

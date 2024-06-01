@@ -60,7 +60,7 @@ Action ActionVent1{
   /*description*/ "Vent Speed 1",
   /*actionCode*/ ACTION_1,
   /*function*/ 0,
-  /*buttons*/ { KitchenHoodRemote.button1, Remote1.button1, Remote2.button1 }
+  /*buttons*/ { KitchenHoodRemote.button1, Remote1.button1, Remote2.button1, RemoteWithAntenna.button1 }
 };
 //------------------------------------------------
 Action ActionVent2{
@@ -68,7 +68,7 @@ Action ActionVent2{
   /*description*/ "Vent Speed 2",
   /*actionCode*/ ACTION_2,
   /*function*/ 0,
-  /*buttons*/ { KitchenHoodRemote.button2, Remote2.button2 }
+  /*buttons*/ { KitchenHoodRemote.button2, Remote2.button2, RemoteWithAntenna.button2 }
 };
 //------------------------------------------------
 Action ActionVent3{
@@ -76,7 +76,7 @@ Action ActionVent3{
   /*description*/ "Vent Speed 3",
   /*actionCode*/ ACTION_3,
   /*function*/ 0,
-  /*buttons*/ { KitchenHoodRemote.button3, Remote2.button3 }
+  /*buttons*/ { KitchenHoodRemote.button3, Remote2.button3, RemoteWithAntenna.button3 }
 };
 //------------------------------------------------
 //------------------------------------------------
@@ -85,12 +85,20 @@ Action ActionVentOff{
   /*description*/ "Stop Ventilation",
   /*actionCode*/ ACTION_4,
   /*function*/ 0,
-  /*buttons*/ {}
+  /*buttons*/ { RemoteWithAntenna.button4 }
 };
 //------------------------------------------------
 Action ActionVentOn{
   /*name*/ "Vent-On",
   /*description*/ "Start Ventilation",
+  /*actionCode*/ ACTION_5,
+  /*function*/ 0,
+  /*buttons*/ {}
+};
+//------------------------------------------------
+Action ActionVentOnOffToggle{
+  /*name*/ "Vent-On/Off",
+  /*description*/ "Start/Stop Ventilation",
   /*actionCode*/ ACTION_5,
   /*function*/ 0,
   /*buttons*/ {}

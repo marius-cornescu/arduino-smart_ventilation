@@ -3,7 +3,7 @@
 // Various debug options
 //#define DEBUG
 //#define RfLogsToSerial   // Print RF messages to Serial Terminal       // uses 9% of memory
-//#define I2CLogsToSerial  // Print I2C messages to Serial Terminal       // uses ??% of memory
+//#define I2CLogsToSerial  // Print I2C messages to Serial Terminal       // uses 1% of memory
 //------------------------------------------------
 // Various Features
 #define UseDisplay        // Log information and actions to the Display // uses 18% of memory
@@ -83,7 +83,7 @@ void loop() {
     //
     menu_ActIfActivity();
     //
-    __rebootAfterHours_atMidnight();
+    //__rebootAfterHours_atMidnight();
     //
     delay(10 * TIME_TICK);
   }
