@@ -7,6 +7,7 @@ const byte ACTION_MAX_VALID = 90;  // any action with higher value will be ignor
 //------------------------------------------------
 const byte ACTION_NOP = 0;
 const byte ACTION_RESET = 10;
+const byte ACTION_ON_OFF_TOGGLE = 11;
 //
 const byte ACTION_1 = 1;
 const byte ACTION_2 = 2;
@@ -20,7 +21,7 @@ const byte ACTION_7 = 7;
 //
 const byte ACTION_8 = 8;    // Not used
 const byte ACTION_9 = 9;    // Not used
-const byte ACTION_11 = 11;  // Not used
+const byte ACTION_12 = 12;  // Not used
 //
 
 //==================================================================================================
@@ -50,7 +51,7 @@ Action ResetAction{
   /*description*/ "Reset",
   /*actionCode*/ ACTION_RESET,
   /*function*/ 0,
-  /*buttons*/ {}
+  /*buttons*/ { KitchenHoodRemote.button4 }
 };
 //------------------------------------------------
 
@@ -60,7 +61,7 @@ Action ActionVent1{
   /*description*/ "Vent Speed 1",
   /*actionCode*/ ACTION_1,
   /*function*/ 0,
-  /*buttons*/ { KitchenHoodRemote.button1, Remote1.button1, Remote2.button1, RemoteWithAntenna.button1 }
+  /*buttons*/ { KitchenHoodRemote.button1, OldKHoodRemote.button1, Remote1.button1, Remote2.button1 }
 };
 //------------------------------------------------
 Action ActionVent2{
@@ -68,7 +69,7 @@ Action ActionVent2{
   /*description*/ "Vent Speed 2",
   /*actionCode*/ ACTION_2,
   /*function*/ 0,
-  /*buttons*/ { KitchenHoodRemote.button2, Remote2.button2, RemoteWithAntenna.button2 }
+  /*buttons*/ { KitchenHoodRemote.button2, OldKHoodRemote.button2, Remote2.button2 }
 };
 //------------------------------------------------
 Action ActionVent3{
@@ -76,7 +77,7 @@ Action ActionVent3{
   /*description*/ "Vent Speed 3",
   /*actionCode*/ ACTION_3,
   /*function*/ 0,
-  /*buttons*/ { KitchenHoodRemote.button3, Remote2.button3, RemoteWithAntenna.button3 }
+  /*buttons*/ { KitchenHoodRemote.button3, OldKHoodRemote.button3, Remote2.button3 }
 };
 //------------------------------------------------
 //------------------------------------------------
@@ -85,7 +86,7 @@ Action ActionVentOff{
   /*description*/ "Stop Ventilation",
   /*actionCode*/ ACTION_4,
   /*function*/ 0,
-  /*buttons*/ { RemoteWithAntenna.button4 }
+  /*buttons*/ {}
 };
 //------------------------------------------------
 Action ActionVentOn{
@@ -99,7 +100,7 @@ Action ActionVentOn{
 Action ActionVentOnOffToggle{
   /*name*/ "Vent-On/Off",
   /*description*/ "Start/Stop Ventilation",
-  /*actionCode*/ ACTION_5,
+  /*actionCode*/ ACTION_ON_OFF_TOGGLE,
   /*function*/ 0,
   /*buttons*/ {}
 };
@@ -125,7 +126,7 @@ Action ActionVent3Vent1Long{
 
 
 //------------------------------------------------
-const Action *Actions[] = { &ActionVent1, &ActionVent2, &ActionVent3, &ActionVentOff, &ActionVentOn, &ActionVent3Vent1Short, &ActionVent3Vent1Long, &ResetAction };
+const Action *Actions[] = { &ActionVent1, &ActionVent2, &ActionVent3, &ActionVentOff, &ActionVentOn, &ActionVentOnOffToggle, &ActionVent3Vent1Short, &ActionVent3Vent1Long, &ResetAction };
 //==================================================================================================
 const Action *getActionByActionCode(byte actionCode) {
   for (byte act = 0; act < ARRAY_LEN(Actions); act++) {

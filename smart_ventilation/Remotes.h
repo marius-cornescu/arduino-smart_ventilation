@@ -17,11 +17,11 @@ struct Remote {
 */
 //------------------------------------------------
 const Remote KitchenHoodRemote {
-  /*name*/      "hota",
-  /*button1*/   9094708,
-  /*button2*/   9094705,
-  /*button3*/   9094706,
-  /*button4*/   0
+  /*name*/      "hota 4 butoane - antenna",
+  /*button1*/   2658088,
+  /*button2*/   2658084,
+  /*button3*/   2658082,
+  /*button4*/   2658081
 };
 //------------------------------------------------
 const Remote Remote1 {
@@ -56,12 +56,12 @@ const Remote ProgRemote2 {
   /*button4*/   9037308  // generated code
 };
 //------------------------------------------------
-const Remote RemoteWithAntenna {
-  /*name*/      "alba 4 butoane - antenna",
-  /*button1*/   2658088,
-  /*button2*/   2658084,
-  /*button3*/   2658082,
-  /*button4*/   2658081
+const Remote OldKHoodRemote {
+  /*name*/      "old-hota",
+  /*button1*/   9094708,
+  /*button2*/   9094705,
+  /*button3*/   9094706,
+  /*button4*/   0
 };
 //------------------------------------------------
 

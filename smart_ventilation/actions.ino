@@ -15,7 +15,7 @@ const byte RELAY_4_PIN = 8;  // DIGITAL PORT 8
 //= VARIABLES ======================================================================================
 const Action *previousAction = &NoAction;
 // is the ventilation status pin on HIGH => should ventilation be running ?
-static bool isVentilationOnInV1 = true;
+static bool isSchedulerV1On = true;
 
 //==================================================================================================
 //**************************************************************************************************
@@ -45,9 +45,10 @@ void __SetupFunctionsForActions() {
   //
   ActionVentOff.function = __VentilationOff;
   ActionVentOn.function = __VentilationOn;
+  ActionVentOnOffToggle.function = __VentilationOnOffToggle;
   //
-  ActionVent3Vent1Short.function = __Ventilation3For1Minutes;
-  ActionVent3Vent1Long.function = __Ventilation3For5Minutes;
+  ActionVent3Vent1Short.function = __Ventilation3ForXMinutes;
+  ActionVent3Vent1Long.function = __Ventilation3ForYMinutes;
   //
 }
 //**************************************************************************************************
@@ -110,14 +111,14 @@ void __NoAction() {
 }
 //==================================================================================================
 void __VentilationSpeed1() {
-  digitalWrite(RELAY_1_PIN, isVentilationOnInV1 ? HIGH : LOW);
+  digitalWrite(RELAY_1_PIN, isSchedulerV1On ? HIGH : LOW);
   digitalWrite(RELAY_2_PIN, HIGH);
   digitalWrite(RELAY_3_PIN, HIGH);
   currentVentSpeed = 1;
 }
 //==================================================================================================
 void __VentilationSpeed2() {
-  if (isVentilationOnInV1 == false && currentVentSpeed == 0) {
+  if (isSchedulerV1On == false && currentVentSpeed == 0) {
     __VentilationStart();
   }
 
@@ -128,7 +129,7 @@ void __VentilationSpeed2() {
 }
 //==================================================================================================
 void __VentilationSpeed3() {
-  if (isVentilationOnInV1 == false && currentVentSpeed == 0) {
+  if (isSchedulerV1On == false && currentVentSpeed == 0) {
     __VentilationStart();
   }
 
@@ -138,14 +139,21 @@ void __VentilationSpeed3() {
   currentVentSpeed = 3;
 }
 //==================================================================================================
-void __Ventilation3For1Minutes() {
+void __Ventilation3ForXMinutes() {
   __VentilationSpeed3();
   clock_Alarm1_SetInMinutesWithAction(1, &ActionVent1);
 }
 //==================================================================================================
-void __Ventilation3For5Minutes() {
+void __Ventilation3ForYMinutes() {
   __VentilationSpeed3();
   clock_Alarm1_SetInMinutesWithAction(5, &ActionVent1);
+}
+//==================================================================================================
+void __VentilationOn() {
+  if (currentVentSpeed == 0) {
+    __VentilationStart();
+    actions_ProcessAction(&ActionVent1);
+  }
 }
 //==================================================================================================
 void __VentilationOff() {
@@ -155,20 +163,24 @@ void __VentilationOff() {
   currentVentSpeed = 0;
 }
 //==================================================================================================
-void __VentilationOn() {
-  __VentilationStart();
-  actions_ProcessAction(&ActionVent1);
-}
-//==================================================================================================
-void __VentilationStart() {                                 // FLIP from 2 to 1, to go into low speed mode
-  boolean isVentilationOnInV1Buffer = isVentilationOnInV1;  // store to buffer
-  isVentilationOnInV1 = true;
+void __VentilationStart() {
+  boolean isSchedulerV1OnBuffer = isSchedulerV1On;  // store to buffer
+  isSchedulerV1On = true;
 
+  // FLIP from 2 to 1, to go into low speed mode
   __VentilationSpeed2();
   delay(50 * TIME_TICK);
   __VentilationSpeed1();
 
-  isVentilationOnInV1 = isVentilationOnInV1Buffer;  // restore from buffer
+  isSchedulerV1On = isSchedulerV1OnBuffer;  // restore from buffer
+}
+//==================================================================================================
+void __VentilationOnOffToggle() {
+  if (currentVentSpeed == 0) {
+    actions_ProcessAction(&ActionVentOn);
+  } else {
+    actions_ProcessAction(&ActionVentOff);
+  }
 }
 //==================================================================================================
 void __ResetAction() {
@@ -179,23 +191,23 @@ void __ResetAction() {
 
 //##################################################################################################
 void actions_onSchedulerStatusChange(bool newValue) {
-  if (isVentilationOnInV1 == newValue) {
+  if (isSchedulerV1On == newValue) {
     return;
   }
-  isVentilationOnInV1 = newValue;
+  isSchedulerV1On = newValue;
 
 #ifdef DEBUG
   char buffer[30];
-  sprintf(buffer, "%s A%02d", isVentilationOnInV1 ? "true" : "false", previousAction->actionCode);
+  sprintf(buffer, "%s A%02d", isSchedulerV1On ? "true" : "false", previousAction->actionCode);
   display_Print2ndLine(buffer);
 #endif
 
-  if (isVentilationOnInV1) {
-    if ((previousAction == &ActionVentOff) || (previousAction == &ActionVent1)) {
+  if (isSchedulerV1On) {
+    if (currentVentSpeed == 0) {
       actions_ProcessAction(&ActionVentOn);
     }
   } else {
-    if ((previousAction == &ActionVentOn) || (previousAction == &ActionVent1)) {
+    if (currentVentSpeed == 1) {
       actions_ProcessAction(&ActionVentOff);
     }
   }
