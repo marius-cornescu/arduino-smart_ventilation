@@ -52,6 +52,12 @@ bool comm_ActIfReceivedMessage() {
   return false;
 }
 //==================================================================================================
+void comm_SendPollMessage() {
+#ifdef UseCOMMPro
+  commProto.sendPollMessage();
+#endif
+}
+//==================================================================================================
 #ifdef UseCOMMPro
 //==================================================================================================
 //==================================================================================================
@@ -68,7 +74,7 @@ bool processReceivedMessage(const char* message) {
   char currentActionCodeString[ACTION_PAYLOAD_SIZE + 1];
   memcpy(currentActionCodeString, &message[PAYLOAD_ACTION_START], ACTION_PAYLOAD_SIZE);
   byte newActionCode = (byte)atoi(currentActionCodeString);
-  
+
   if (newActionCode != ACTION_NOP && newActionCode != currentActionCode) {
     currentVentSpeed = newVentSpeed;
     currentActionCode = newActionCode;

@@ -45,6 +45,8 @@ const char pass[] = WIFI_PASSWORD;
 //
 const int LED_INDICATOR_PIN = LED_BUILTIN;
 
+unsigned long REFRESH_COLLDOWN_TIME = 10 * 60 * SEC;  // value in milliseconds
+
 //= VARIABLES ======================================================================================
 BlynkTimer timer;
 //..............................
@@ -54,6 +56,9 @@ WiFiClient espClient;
 byte currentVentSpeed = 0;
 byte currentActionCode = ACTION_NOP;
 char currentActionLabel[LABEL_PAYLOAD_SIZE];
+
+bool resetRequired = false;
+unsigned long lastRefreshWorker = 0;
 
 //##################################################################################################
 // function will run every time Blynk connection is established
@@ -72,7 +77,7 @@ BLYNK_WRITE(V0) {                           // values [0..3]
 }
 //##################################################################################################
 // will run every time Action Widget writes values to Virtual Pin V1
-BLYNK_WRITE(V1) {                           // values [1..90]
+BLYNK_WRITE(V1) {                            // values [1..90]
   byte newActionCode = (byte)param.asInt();  // assigning incoming value from pin V1 to a variable
   onActionCodeChanged(newActionCode, true);
 }
@@ -86,9 +91,17 @@ void timerEvent() {
 
     mqtt_PublishUpdate();
 
+    if (currentActionCode == ACTION_RESET) {
+      resetRequired = true;
+    }
+
     // Clear the ActionCode
     currentActionCode = 0;
     Blynk.virtualWrite(V1, currentActionCode);
+    //
+    if (resetRequired) {
+      ESP.restart();
+    }
   }
 }
 //##################################################################################################
@@ -123,6 +136,7 @@ void loop() {
   Blynk.run();
   timer.run();  // Initiates BlynkTimer
   mqtt_MaintainConnection();
+  refreshDataFromWorker();
 }
 //OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 //==================================================================================================
@@ -150,7 +164,7 @@ void onActionCodeChanged(byte newActionCode, bool updateBlynk) {
 
     // Clear the ActionCode
     currentActionCode = 0;
-    
+
     if (updateBlynk) {
       Blynk.virtualWrite(V1, currentActionCode);
     }
@@ -178,6 +192,21 @@ byte actionCodeFromVentSpeed(byte newVentSpeed) {
   }
 
   return newActionCode;
+}
+//==================================================================================================
+void refreshDataFromWorker() {
+  if (comm_ShouldRefreshWorker()) {
+    comm_SendPollMessage();
+  }
+}
+//==================================================================================================
+bool comm_ShouldRefreshWorker() {
+  if (lastRefreshWorker > 0 && millis() - lastRefreshWorker <= REFRESH_COLLDOWN_TIME) {
+    return false;
+  } else {
+    lastRefreshWorker = millis();
+    return true;
+  }
 }
 //==================================================================================================
 void mqtt_PublishUpdate() {

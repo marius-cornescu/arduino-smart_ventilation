@@ -184,6 +184,11 @@ void __VentilationOnOffToggle() {
 }
 //==================================================================================================
 void __ResetAction() {
+  // first send the reset command to the COMM module
+  previousAction = &ResetAction;
+  comm_ActOnNewDataToSend();
+  delay(50 * TIME_TICK);
+  // then reset
   resetFunc();
 }
 //==================================================================================================

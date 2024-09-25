@@ -126,7 +126,9 @@ Action ActionVent3Vent1Long{
 
 
 //------------------------------------------------
-const Action *Actions[] = { &ActionVent1, &ActionVent2, &ActionVent3, &ActionVentOff, &ActionVentOn, &ActionVentOnOffToggle, &ActionVent3Vent1Short, &ActionVent3Vent1Long, &ResetAction };
+const Action *Actions[] = { &ActionVentOn, &ActionVentOff, &ActionVentOnOffToggle, &ResetAction,
+                            &ActionVent1, &ActionVent2, &ActionVent3,
+                            &ActionVent3Vent1Short, &ActionVent3Vent1Long };
 //==================================================================================================
 const Action *getActionByActionCode(byte actionCode) {
   for (byte act = 0; act < ARRAY_LEN(Actions); act++) {

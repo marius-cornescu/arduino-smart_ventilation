@@ -1,12 +1,14 @@
 #ifndef _HEADERFILE_COMMON
 #define _HEADERFILE_COMMON
 //= CONSTANTS ======================================================================================
-#define SW_VERSION "2023.04.21"
+#define SW_VERSION "024.09.25"
+#define BLYNK_FIRMWARE_VERSION SW_VERSION
 //------------------------------------------------
 //------------------------------------------------
 #define ARRAY_LEN(array) (sizeof(array) / sizeof(array[0]))
 
-#define SEC 1000L  // 1 second
+#define SEC 1000L      // 1 second
+#define HOUR 3600000L  // 1 hour in milliseconds
 
 #ifdef DEBUG
 #define TIME_TICK 40L
@@ -14,8 +16,8 @@
 #define TIME_TICK 10L
 #endif
 
-//------------------------------------------------
+void (*resetFunc)(void) = 0;  // declare reset fuction at address 0
 
 //------------------------------------------------
 //==================================================================================================
-#endif // _HEADERFILE_COMMON
+#endif  // _HEADERFILE_COMMON
