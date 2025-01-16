@@ -2,7 +2,7 @@
 #ifndef _HEADERFILE_COMMON
 #define _HEADERFILE_COMMON
 //= CONSTANTS ======================================================================================
-#define SW_VERSION "025.01.17"
+#define SW_VERSION "025.01.16"
 #define BLYNK_FIRMWARE_VERSION SW_VERSION
 //------------------------------------------------
 //------------------------------------------------
