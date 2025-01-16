@@ -34,8 +34,8 @@ void setup() {
 #ifdef DEBUG
   // Open serial communications and wait for port to open:
   Serial.begin(115200);
-  Serial.println(F("START-UP >>>>>>>>>>>>>>>"));
 #endif
+  debugPrintln(F("START-UP >>>>>>>>>>>>>>>"));
   //..............................
   // initialize digital pin LED_INDICATOR_PIN as an output.
   pinMode(LED_INDICATOR_PIN, OUTPUT);
@@ -63,9 +63,7 @@ void setup() {
   digitalWrite(LED_INDICATOR_PIN, LOW);
   display_Clear2ndLine();
   //..............................
-#ifdef DEBUG
-  Serial.println(F("START-UP <<<<<<<<<<<<<<<"));
-#endif
+  debugPrintln(F("START-UP <<<<<<<<<<<<<<<"));
 }
 //**************************************************************************************************
 //OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO

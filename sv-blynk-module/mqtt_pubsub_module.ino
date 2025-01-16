@@ -1,6 +1,8 @@
 //= DEFINES ========================================================================================
 
 //= INCLUDES =======================================================================================
+#include "Common.h"
+#include "Secrets.h"
 #include <PubSubClient.h>
 
 //= CONSTANTS ======================================================================================
@@ -17,23 +19,21 @@ unsigned long lastMqttPublish = 0;
 //==================================================================================================
 //**************************************************************************************************
 void mqtt_Setup() {
-#ifdef DEBUG
-  Serial.println(F("Mqtt:Setup >>>"));
-#endif
+  debugPrintln(F("Mqtt:Setup >>>"));
   //..............................
   mqttClient.setServer(mqtt_server, 1883);
   mqttClient.setCallback(mqtt_Callback);
   //..............................
   delay(10 * TIME_TICK);
-#ifdef DEBUG
-  Serial.println(F("Mqtt:Setup <<<"));
-#endif
+  debugPrintln(F("Mqtt:Setup <<<"));
 }
 //**************************************************************************************************
 //==================================================================================================
 void mqtt_MaintainConnection() {
-  if (!mqttClient.connected()) {
+  byte retry = 5;
+  while (!mqttClient.connected() && retry > 0) {
     mqtt_Reconnect();
+    retry--;
   }
   mqttClient.loop();
 }
@@ -41,45 +41,34 @@ void mqtt_MaintainConnection() {
 void mqtt_Reconnect() {
   // Loop until we're reconnected
   while (!mqttClient.connected()) {
-#ifdef DEBUG
-    Serial.print(F("Attempting MQTT connection..."));
-#endif
+    debugPrint(F("Attempting MQTT connection..."));
     // Attempt to connect
-    if (mqttClient.connect(HOST_NAME)) {
-#ifdef DEBUG
-      Serial.println("connected");
-#endif
+    if (mqttClient.connect(HOST_NAME, MQTT_USERNAME, MQTT_PASSWORD)) {
+      debugPrintln("connected");
       // Subscribe
       mqttClient.subscribe(SUBSCRIBE_TOPIC);
     } else {
-#ifdef DEBUG
-      Serial.print("failed, rc=");
-      Serial.print(mqttClient.state());
-      Serial.println(F(" try again in 5 seconds"));
-#endif
+      debugPrint("failed, rc=");
+      debugPrint(mqttClient.state());
+      debugPrintln(F(" try again in 5 seconds"));
       // Wait 5 seconds before retrying
-      delay(500 * TIME_TICK);
+      delay(5 * SEC);
     }
   }
 }
 //==================================================================================================
 void mqtt_Callback(char* topic, byte* message, unsigned int length) {
-#ifdef DEBUG
-  Serial.print(F("Message arrived on topic: "));
-  Serial.print(topic);
-  Serial.print(F(". Message: "));
-#endif
+  debugPrint(F("Message arrived on topic: "));
+  debugPrint(topic);
+  debugPrint(F(". Message: "));
+
   String messageTemp;
 
   for (int i = 0; i < length; i++) {
-#ifdef DEBUG
-    Serial.print((char)message[i]);
-#endif
+    debugPrint((char)message[i]);
     messageTemp += (char)message[i];
   }
-#ifdef DEBUG
-  Serial.println();
-#endif
+  debugPrintln();
 
   if (String(topic).endsWith("/speed")) {
     byte newVentSpeed = messageTemp.toInt();
@@ -90,7 +79,7 @@ void mqtt_Callback(char* topic, byte* message, unsigned int length) {
   }
 }
 //==================================================================================================
-void mqtt_PublishInt(const char* topic, byte value) {
+void mqtt_PublishInt(const char* topic, int value) {
   // Convert the value to a char array
   char valueString[4];
   utoa((unsigned)value, valueString, 10);

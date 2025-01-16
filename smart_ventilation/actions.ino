@@ -20,9 +20,8 @@ static bool isSchedulerV1On = true;
 //==================================================================================================
 //**************************************************************************************************
 void actions_Setup() {
-#ifdef DEBUG
-  Serial.println(F("ACTIONS:Setup >>>"));
-#endif
+  debugPrintln(F("ACTIONS:Setup >>>"));
+
   __SetupRelays();
   //
   __SetupFunctionsForActions();
@@ -31,8 +30,9 @@ void actions_Setup() {
   //
 #ifdef DEBUG
   debug_PrintActions();
-  Serial.println(F("ACTIONS:Setup <<<"));
 #endif
+
+  debugPrintln(F("ACTIONS:Setup <<<"));
 }
 //**************************************************************************************************
 void __SetupFunctionsForActions() {

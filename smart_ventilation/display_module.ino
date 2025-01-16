@@ -26,9 +26,7 @@ byte progress = 0;  // used to indicate progress on display
 //**************************************************************************************************
 void display_Setup() {
 #ifdef UseDisplay
-#ifdef DEBUG
-  Serial.println(F("DISPLAY:Setup >>>"));
-#endif
+  debugPrintln(F("DISPLAY:Setup >>>"));
   //..............................
   lcd.init();       // initialise the LCD
   lcd.backlight();  // turn backlight on
@@ -49,9 +47,7 @@ void display_Setup() {
   //lcd.noBacklight(); // turn backlight off
   lcd.noBlink();
   //..............................
-#ifdef DEBUG
-  Serial.println(F("DISPLAY:Setup <<<"));
-#endif
+  debugPrintln(F("DISPLAY:Setup <<<"));
 #endif
 }
 //**************************************************************************************************

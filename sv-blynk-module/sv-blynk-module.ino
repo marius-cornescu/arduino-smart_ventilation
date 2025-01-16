@@ -112,9 +112,7 @@ void setup() {
   Serial.begin(115200);
   while (!Serial) { ; }
   //..............................
-#ifdef DEBUG
-  Serial.println(F("START-UP >>>>>>>>>>>>>>>"));
-#endif
+  debugPrintln(F("START-UP >>>>>>>>>>>>>>>"));
   //..............................
   WiFi.hostname(host_name);
   //
@@ -126,9 +124,7 @@ void setup() {
   //
   mqtt_Setup();
   //..............................
-#ifdef DEBUG
-  Serial.println(F("START-UP <<<<<<<<<<<<<<<"));
-#endif
+  debugPrintln(F("START-UP <<<<<<<<<<<<<<<"));
 }
 //**************************************************************************************************
 //OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO

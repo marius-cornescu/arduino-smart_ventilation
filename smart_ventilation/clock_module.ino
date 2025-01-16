@@ -21,14 +21,10 @@ struct Action *a2_ScheduledAction = &NoAction;
 //**************************************************************************************************
 void clock_Setup() {
 #ifdef UseRealTimeClock
-#ifdef DEBUG
-  Serial.println(F("CLOCK:Setup >>>"));
-#endif
+  debugPrintln(F("CLOCK:Setup >>>"));
   //..............................
   //..............................
-#ifdef DEBUG
-  Serial.println(F("CLOCK:Setup <<<"));
-#endif
+  debugPrintln(F("CLOCK:Setup <<<"));
 #endif
 }
 //**************************************************************************************************
@@ -109,9 +105,7 @@ void __Alarm1_TriggerIfAlarm() {
     //
     a1_ScheduledAction = &NoAction;
     //
-#ifdef DEBUG
-    Serial.println(F("Alarm 1 triggered"));
-#endif
+    debugPrintln(F("Alarm 1 triggered"));
     //
     display_Clear2ndLine();
   }
@@ -123,9 +117,7 @@ void __Alarm2_TriggerIfAlarm() {
     //
     a2_ScheduledAction = &NoAction;
     //
-#ifdef DEBUG
-    Serial.println(F("Alarm 2 triggered"));
-#endif
+    debugPrintln(F("Alarm 2 triggered"));
     //
     display_Clear2ndLine();
   }
@@ -143,10 +135,8 @@ void __GetTimeStamp(char *timestamp) {
   DateTime now = myRTC.now();
   sprintf(timestamp, "%02d/%02d/%02d %02d:%02d:%02d", now.day(), now.month(), now.year(), now.hour(), now.minute(), now.second());
 
-#ifdef DEBUG
-  Serial.print(F("Date/Time: "));
-  Serial.println(timestamp);
-#endif
+  debugPrint(F("Date/Time: "));
+  debugPrintln(timestamp);
 #endif
 }
 //==================================================================================================

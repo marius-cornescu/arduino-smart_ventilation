@@ -14,16 +14,12 @@ unsigned long lastVentStatusUpdateMillis = 0;
 //==================================================================================================
 //**************************************************************************************************
 void scheduler_Setup() {
-#ifdef DEBUG
-  Serial.println(F("SCHEDULER:Setup >>>"));
-#endif
+  debugPrintln(F("SCHEDULER:Setup >>>"));
   //..............................
   pinMode(VENT_STATUS_PIN, INPUT);
   lastVentStatusUpdateMillis = 5 * SCHEDULER_GRACE_PERIOD; // ignore updates in the begining / let the system stabilize
   //..............................
-#ifdef DEBUG
-  Serial.println(F("SCHEDULER:Setup <<<"));
-#endif
+  debugPrintln(F("SCHEDULER:Setup <<<"));
 }
 //**************************************************************************************************
 //==================================================================================================
