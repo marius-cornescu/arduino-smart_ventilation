@@ -128,11 +128,31 @@ void loop() {
     // publishStatusDataToMqtt(); // FIXME
   }
   //
-  delay(100 * TIME_TICK);
+  test_LEDs();
+  //
+  delay(1 * SEC);
 }
 //OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 //==================================================================================================
-void spray_loop() {
+void test_LEDs() {
+  //
+  digitalWrite(ESP8266_GPIO0, HIGH); // LED_OFF
+  delay(10 * SEC);
+  //
+  digitalWrite(ESP8266_GPIO1, HIGH); // LED_OFF
+  delay(10 * SEC);
+  //
+  digitalWrite(ESP8266_GPIO2, HIGH); // LED_OFF
+  delay(10 * SEC);
+  //
+  digitalWrite(ESP8266_GPIO0, LOW); // LED_OFF
+  digitalWrite(ESP8266_GPIO1, LOW); // LED_OFF
+  digitalWrite(ESP8266_GPIO2, LOW); // LED_OFF
+  delay(5 * SEC);
+}
+
+//==================================================================================================
+void spray_old_config() {
   // Enable for 17sec (15"' to power on + 2"' to run)
   digitalWrite(D_PIN, HIGH);
   delay(17000); //-> DONE
