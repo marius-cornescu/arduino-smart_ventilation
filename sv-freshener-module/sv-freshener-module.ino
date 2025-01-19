@@ -11,15 +11,30 @@
 */
 
 //= DEFINES ========================================================================================
+//
+#define PUBLISH_PORT_TOPIC "home/pcm/unit-A/port/"
+#define PUBLISH_STATUS_TOPIC "home/pcm/unit-A/status"
+
+#define SUBSCRIBE_TOPIC "home/pcm/unit-A/command/+"
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //#define DEBUG
 
-#define ESP8266_BUILTIN_LED 1 // LOW is on and HIGH is off for blue led
 #define ESP8266_GPIO0 0        // HIGH is 3.3V
+#define ESP8266_GPIO1 1        // HIGH is 3.3V
 #define ESP8266_GPIO2 2        // HIGH is 3.3V 
 
+#define ESP8266_BUILTIN_LED ESP8266_GPIO2 // LOW is on and HIGH is off for blue led
+
+#define ESP8266_ON HIGH
+#define ESP8266_OFF LOW
+
 //= INCLUDES =======================================================================================
-
-
+#include "Common.h"
+#include "Secrets.h"
+#include <ESP8266WiFi.h>
+#include <PubSubClient.h>
+#include <Wire.h>
 
 //= CONSTANTS ======================================================================================
 const int D_PIN = ESP8266_GPIO2;
@@ -38,8 +53,16 @@ const byte DELAYS_CNT = 5;
 */
 const unsigned long DELAYS[] = {0, 185000, 160000, 160000, 580000};
 
+//------------------------------------------------
+const char host_name[] = HOST_NAME;
+
+// WiFi credentials (password to "" for open networks)
+const char ssid[] = WIFI_SSID;
+const char pass[] = WIFI_PASSWORD;
 
 //= VARIABLES ======================================================================================
+WiFiClient espClient;
+
 volatile int iteration = 0;
 
 
@@ -49,24 +72,80 @@ void setup() {
 #ifdef DEBUG
   // Open serial communications and wait for port to open:
   Serial.begin(115200);
-  Serial.println("START-UP");
+  while (!Serial) { ; }
 #endif
+  debugPrintln(F("START-UP >>>>>>>>>>>>>>>"));
+  //..............................
   //
-  pinMode(D_PIN, OUTPUT);
+  wifi_Setup();
+  //
+  mqtt_Setup();
+  //
+  pinMode(ESP8266_GPIO0, OUTPUT);
+  pinMode(ESP8266_GPIO1, OUTPUT);
+  pinMode(ESP8266_GPIO2, OUTPUT);
+  //
+  digitalWrite(ESP8266_GPIO0, ESP8266_OFF); // LED_OFF
+  digitalWrite(ESP8266_GPIO1, ESP8266_OFF); // LED_OFF
+  digitalWrite(ESP8266_GPIO2, ESP8266_OFF); // LED_OFF
+  //
+  delay(1 * TIME_TICK);
+  //..............................
+  debugPrintln(F("START-UP <<<<<<<<<<<<<<<"));
 }
 //**************************************************************************************************
-//==================================================================================================
-void loop() {
-  // Enable for 17sec (15"' to power on + 2"' to run)
-  digitalWrite(D_PIN, HIGH);
-  delay(17000); //-> DONE
-  // Power down for 3sec to cool down
-  digitalWrite(D_PIN, LOW);
-  delay(3000);
-  // 20 seconds is minimum
-  unsigned long dynamic_delay = computeDynamicDelay();
-  delay(dynamic_delay);
+void wifi_Setup() {
+  delay(TIME_TICK);
+  // WiFi.hostname(host_name);
+  // WiFi.setOutputPower(0);  // Sets WiFi RF power output to lowest level, lowest RF power usage
+  // We start by connecting to a WiFi network
+  debugPrintln(F(""));
+  debugPrint(F("Connecting to "));
+  debugPrint(ssid);
+
+  // WiFi.begin(ssid, pass);
+
+  // while (WiFi.status() != WL_CONNECTED) {
+  //   delay(50 * TIME_TICK);
+  //   debugPrint(F("."));
+  // }
+
+  debugPrintln(F(""));
+  debugPrint(F("WiFi connected | "));
+  debugPrint(F("IP address: "));
+  //debugPrintln(WiFi.localIP());
 }
+//**************************************************************************************************
+//OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+void loop() {
+  //
+  digitalWrite(ESP8266_GPIO0, ESP8266_ON); // LED_OFF
+  delay(10 * SEC);
+  //
+  digitalWrite(ESP8266_GPIO1, ESP8266_ON); // LED_OFF
+  delay(10 * SEC);
+  //
+  digitalWrite(ESP8266_GPIO2, ESP8266_ON); // LED_OFF
+  delay(10 * SEC);
+  //
+  digitalWrite(ESP8266_GPIO0, ESP8266_OFF); // LED_OFF
+  digitalWrite(ESP8266_GPIO1, ESP8266_OFF); // LED_OFF
+  digitalWrite(ESP8266_GPIO2, ESP8266_OFF); // LED_OFF
+  delay(5 * SEC);
+}
+//OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+//==================================================================================================
+// void loop() {
+//   // Enable for 17sec (15"' to power on + 2"' to run)
+//   digitalWrite(D_PIN, HIGH);
+//   delay(17000); //-> DONE
+//   // Power down for 3sec to cool down
+//   digitalWrite(D_PIN, LOW);
+//   delay(3000);
+//   // 20 seconds is minimum
+//   unsigned long dynamic_delay = computeDynamicDelay();
+//   delay(dynamic_delay);
+// }
 //==================================================================================================
 unsigned long computeDynamicDelay() {
   unsigned long response = DELAYS[DELAYS_CNT - 1];
