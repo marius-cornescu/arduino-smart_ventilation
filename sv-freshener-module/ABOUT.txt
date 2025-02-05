@@ -3,16 +3,51 @@ ESP8266 - 01s
 
 Baud rate = 115200 baud
 ##################################################################################################################
-##################################################################################################################
 
-
-##################################################################################################################
-
- 
+{"NAME":"ESP8266-S1","GPIO":[1,1,1,0,0,0,0,0,0,0,0,0,0,0],"FLAG":0,"BASE":18}
 
 ##################################################################################################################
 
+
 ##################################################################################################################
+
+MQTT Client	smart_freshener_1
+MQTT Topic	smart_freshener_1
+MQTT Group Topic 1	tasmota/home/cmnd/tasmotas/
+MQTT Full Topic	tasmota/home/cmnd/smart_freshener_1/
+
+ESP Chip Id	6614912 (ESP8266EX)
+Flash Chip Id	0x14605E (DOUT)
+Flash Size	1024 KB
+Program Flash Size	1024 KB
+Program Size	652 KB
+Free Program Space	348 KB
+Free Memory	25.2 KB
+
+##################################################################################################################
+
+20:35:23.015 CMD: SetOption0 0
+20:35:23.022 MQT: tasmota/home/stat/smart_freshener_1/RESULT = {"SetOption0":"OFF"}
+20:37:06.877 CMD: PowerOnState 0
+20:37:06.885 MQT: tasmota/home/stat/smart_freshener_1/RESULT = {"PowerOnState":0}
+
+##################################################################################################################
+
+SetOption0	Save power state and use after restart (=SaveState)
+0 = disable (see note below)
+1 = enable (default)
+Note: Power state means on/off state of eg. relays or lights. Other parameters like color, color temperature, brightness, dimmer, etc. are still saved when changed. To disable saving other parameters see SaveData.
+
+##################################################################################################################
+
+PowerOnState	Control relay state after powering up the device.
+0 / OFF = keep relay(s) OFF after power up
+1 / ON = turn relay(s) ON after power up
+2 / TOGGLE = toggle relay(s) from last saved state
+3 = switch relay(s) to their last saved state (default)
+4 = turn relay(s) ON and disable further relay control
+5 = after a PulseTime period turn relay(s) ON (acts as inverted PulseTime mode)
+
 ##################################################################################################################
 ##################################################################################################################
 

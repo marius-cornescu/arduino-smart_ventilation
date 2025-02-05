@@ -47,6 +47,8 @@ void __SetupFunctionsForActions() {
   ActionVentOn.function = __VentilationOn;
   ActionVentOnOffToggle.function = __VentilationOnOffToggle;
   //
+  ActionVent2Vent1Short.function = __Ventilation2ForXMinutes;
+  ActionVent2Vent1Long.function = __Ventilation2ForYMinutes;
   ActionVent3Vent1Short.function = __Ventilation3ForXMinutes;
   ActionVent3Vent1Long.function = __Ventilation3ForYMinutes;
   //
@@ -137,6 +139,16 @@ void __VentilationSpeed3() {
   digitalWrite(RELAY_2_PIN, HIGH);
   digitalWrite(RELAY_3_PIN, LOW);
   currentVentSpeed = 3;
+}
+//==================================================================================================
+void __Ventilation2ForXMinutes() {
+  __VentilationSpeed2();
+  clock_Alarm1_SetInMinutesWithAction(1, &ActionVent1);
+}
+//==================================================================================================
+void __Ventilation2ForYMinutes() {
+  __VentilationSpeed2();
+  clock_Alarm1_SetInMinutesWithAction(5, &ActionVent1);
 }
 //==================================================================================================
 void __Ventilation3ForXMinutes() {

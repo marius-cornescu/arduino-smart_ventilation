@@ -2,7 +2,7 @@
 #ifndef _HEADERFILE_COMMON
 #define _HEADERFILE_COMMON
 //= CONSTANTS ======================================================================================
-#define SW_VERSION "025.01.17"
+#define SW_VERSION "025.02.04"
 //------------------------------------------------
 //------------------------------------------------
 #define ARRAY_LEN(array) (sizeof(array) / sizeof(array[0]))

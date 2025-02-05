@@ -11,7 +11,6 @@ struct Remote {
 };
 //------------------------------------------------
 /*
-   TELECOMANDA PATRATA (123)    => Hota
    TELECOMANDA 4 butoane (ABCD) => Toilete
    TELECOMANDA 3 butoane (123)  => Baie
 */
@@ -25,7 +24,7 @@ const Remote KitchenHoodRemote {
 };
 //------------------------------------------------
 const Remote Remote1 {
-  /*name*/      "alba 4 butoane",
+  /*name*/      "alba 4 butoane - Baie",
   /*button1*/   6145640,
   /*button2*/   6145636,
   /*button3*/   6145634,
@@ -33,7 +32,7 @@ const Remote Remote1 {
 };
 //------------------------------------------------
 const Remote Remote2 {
-  /*name*/      "alba 3 butoane",
+  /*name*/      "alba 3 butoane - ?",
   /*button1*/   9468385,
   /*button2*/   9468386,
   /*button3*/   9468388,
@@ -56,13 +55,13 @@ const Remote ProgRemote2 {
   /*button4*/   9037308  // generated code
 };
 //------------------------------------------------
-const Remote OldKHoodRemote {
-  /*name*/      "old-hota",
-  /*button1*/   9094708,
-  /*button2*/   9094705,
-  /*button3*/   9094706,
-  /*button4*/   0
-};
+// const Remote OldKHoodRemote {
+//   /*name*/      "old-hota",
+//   /*button1*/   9094708,
+//   /*button2*/   9094705,
+//   /*button3*/   9094706,
+//   /*button4*/   0
+// };
 //------------------------------------------------
 
 //------------------------------------------------

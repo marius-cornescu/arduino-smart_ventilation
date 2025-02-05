@@ -19,10 +19,12 @@ const byte ACTION_5 = 5;
 //
 const byte ACTION_6 = 6;
 const byte ACTION_7 = 7;
+const byte ACTION_8 = 8;
+const byte ACTION_9 = 9;
 //
-const byte ACTION_8 = 8;    // Not used
-const byte ACTION_9 = 9;    // Not used
 const byte ACTION_12 = 12;  // Not used
+const byte ACTION_13 = 13;  // Not used
+const byte ACTION_14 = 14;  // Not used
 //
 
 //==================================================================================================

@@ -136,13 +136,13 @@ void loop() {
 //==================================================================================================
 void test_LEDs() {
   //
-  digitalWrite(ESP8266_GPIO0, HIGH); // LED_OFF
+  digitalWrite(ESP8266_GPIO0, HIGH); // LED_ON
   delay(10 * SEC);
   //
-  digitalWrite(ESP8266_GPIO1, HIGH); // LED_OFF
+  digitalWrite(ESP8266_GPIO1, HIGH); // LED_ON
   delay(10 * SEC);
   //
-  digitalWrite(ESP8266_GPIO2, HIGH); // LED_OFF
+  digitalWrite(ESP8266_GPIO2, HIGH); // LED_ON
   delay(10 * SEC);
   //
   digitalWrite(ESP8266_GPIO0, LOW); // LED_OFF

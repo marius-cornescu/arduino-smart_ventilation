@@ -18,10 +18,12 @@ const byte ACTION_5 = 5;
 //
 const byte ACTION_6 = 6;
 const byte ACTION_7 = 7;
+const byte ACTION_8 = 8;
+const byte ACTION_9 = 9;
 //
-const byte ACTION_8 = 8;    // Not used
-const byte ACTION_9 = 9;    // Not used
 const byte ACTION_12 = 12;  // Not used
+const byte ACTION_13 = 13;  // Not used
+const byte ACTION_14 = 14;  // Not used
 //
 
 //==================================================================================================
@@ -61,7 +63,7 @@ Action ActionVent1{
   /*description*/ "Vent Speed 1",
   /*actionCode*/ ACTION_1,
   /*function*/ 0,
-  /*buttons*/ { KitchenHoodRemote.button1, OldKHoodRemote.button1, Remote1.button1, Remote2.button1 }
+  /*buttons*/ { KitchenHoodRemote.button1, Remote1.button1, Remote2.button1 }
 };
 //------------------------------------------------
 Action ActionVent2{
@@ -69,7 +71,7 @@ Action ActionVent2{
   /*description*/ "Vent Speed 2",
   /*actionCode*/ ACTION_2,
   /*function*/ 0,
-  /*buttons*/ { KitchenHoodRemote.button2, OldKHoodRemote.button2, Remote2.button2 }
+  /*buttons*/ { KitchenHoodRemote.button2, Remote1.button2, Remote2.button2 }
 };
 //------------------------------------------------
 Action ActionVent3{
@@ -77,7 +79,7 @@ Action ActionVent3{
   /*description*/ "Vent Speed 3",
   /*actionCode*/ ACTION_3,
   /*function*/ 0,
-  /*buttons*/ { KitchenHoodRemote.button3, OldKHoodRemote.button3, Remote2.button3 }
+  /*buttons*/ { KitchenHoodRemote.button3, Remote1.button3, Remote2.button3 }
 };
 //------------------------------------------------
 //------------------------------------------------
@@ -106,20 +108,37 @@ Action ActionVentOnOffToggle{
 };
 //------------------------------------------------
 //------------------------------------------------
+Action ActionVent2Vent1Short{
+  /*name*/ "VS2 1m->VS1",
+  /*description*/ "VentS2(*1m) -> VentS1",
+  /*actionCode*/ ACTION_6,
+  /*function*/ 0,
+  /*buttons*/ { Remote2.button2 }
+};
+//------------------------------------------------
+Action ActionVent2Vent1Long{
+  /*name*/ "VS2 5m->VS1",
+  /*description*/ "VentS2(*5m) -> VentS1",
+  /*actionCode*/ ACTION_7,
+  /*function*/ 0,
+  /*buttons*/ { Remote2.button3 }
+};
+//------------------------------------------------
+//------------------------------------------------
 Action ActionVent3Vent1Short{
   /*name*/ "VS3 1m->VS1",
   /*description*/ "VentS3(*1m) -> VentS1",
-  /*actionCode*/ ACTION_6,
+  /*actionCode*/ ACTION_8,
   /*function*/ 0,
-  /*buttons*/ { Remote1.button2, ProgRemote1.button4 }
+  /*buttons*/ { ProgRemote1.button4 }
 };
 //------------------------------------------------
 Action ActionVent3Vent1Long{
   /*name*/ "VS3 5m->VS1",
   /*description*/ "VentS3(*5m) -> VentS1",
-  /*actionCode*/ ACTION_7,
+  /*actionCode*/ ACTION_9,
   /*function*/ 0,
-  /*buttons*/ { Remote1.button3, Remote1.button4 }
+  /*buttons*/ { Remote1.button4 }
 };
 //------------------------------------------------
 
@@ -128,6 +147,7 @@ Action ActionVent3Vent1Long{
 //------------------------------------------------
 const Action *Actions[] = { &ActionVentOn, &ActionVentOff, &ActionVentOnOffToggle, &ResetAction,
                             &ActionVent1, &ActionVent2, &ActionVent3,
+                            &ActionVent2Vent1Short, &ActionVent2Vent1Long,
                             &ActionVent3Vent1Short, &ActionVent3Vent1Long };
 //==================================================================================================
 const Action *getActionByActionCode(byte actionCode) {
