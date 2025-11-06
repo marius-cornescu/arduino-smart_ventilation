@@ -89,18 +89,10 @@ void loop() {
     //
     menu_ActIfActivity();
     //
-    //__rebootAfterHours_atMidnight();
-    //
     delay(10 * TIME_TICK);
   }
 }
 //OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
-//==================================================================================================
-void __rebootAfterHours_atMidnight() {
-  if (clock_GetUptimeInHours() >= AUTORESET_GRACE_PERIOD_HOURS && clock_HourIsEqualTo(0)) {
-    resetFunc();
-  }
-}
 //==================================================================================================
 void __printSwVersion() {
   char boot_message[16];
@@ -108,5 +100,4 @@ void __printSwVersion() {
   display_Print2ndLine(boot_message);
   delay(4 * SEC);
 }
-//==================================================================================================
 //==================================================================================================
