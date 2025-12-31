@@ -66,10 +66,14 @@ void setup() {
   //
   comm_Setup();
   //
+  eeprom_Setup();
+  //
   delay(50 * TIME_TICK);
   //
   digitalWrite(LED_INDICATOR_PIN, LOW);
   display_Clear2ndLine();
+  //
+  eeprom_LoadState();
   //..............................
   debugPrintln(F("START-UP <<<<<<<<<<<<<<<"));
 }

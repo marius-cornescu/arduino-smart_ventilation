@@ -104,6 +104,8 @@ void actions_ProcessAction(const Action *action) {
   //
   previousAction = action;
   //
+  eeprom_SaveState();
+  //
   comm_ActOnNewDataToSend();
 }
 //==================================================================================================
